@@ -1,0 +1,15 @@
+/.toolchain/
+/release/
+/logs/
+/temp/
+/Data/
+/tests/output/
+/tests/runs/
+__pycache__/
+*.pyc
+.env
+.env.*
+*.pem
+*.key
+*.jks
+*.keystore

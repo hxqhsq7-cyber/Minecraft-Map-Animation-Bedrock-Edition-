@@ -1,0 +1,13 @@
+* text=auto
+*.html text eol=lf
+*.js text eol=lf
+*.cjs text eol=lf
+*.py text eol=lf
+*.ps1 text eol=crlf
+*.md text eol=lf
+*.json text eol=lf
+*.png binary
+*.ico binary
+*.mp4 binary
+*.mcworld binary
+*.mcvideo binary

@@ -1,0 +1,8 @@
+{
+  "name": "mapcinema-desktop",
+  "productName": "鏂规槧",
+  "version": "16.0.1",
+  "description": "方映 MapCinema：基岩版地图视频转换与播放工具",
+  "main": "main.cjs",
+  "private": true
+}
