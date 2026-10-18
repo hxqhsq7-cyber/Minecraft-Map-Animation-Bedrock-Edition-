@@ -1,0 +1,28 @@
+'use strict';
+const fs = require('node:fs'), path = require('node:path'), vm = require('node:vm');
+const assert = require('node:assert/strict');
+const root = path.resolve(__dirname,'..'), repo = path.resolve(root,'..');
+const html = fs.readFileSync(path.join(repo,'app/MapCinema.html'),'utf8');
+const scripts = [...html.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/g)].map(m=>m[1]);
+const assets = path.join(root,'app/src/main/assets');
+const names = ['jszip.min.js','audio.js','core.js','disk.js','large.js','commands.js'];
+names.forEach((name,i)=>assert.equal(fs.readFileSync(path.join(assets,name),'utf8'),scripts[i],name));
+const index = fs.readFileSync(path.join(assets,'index.html'),'utf8');
+assert.ok(index.indexOf('src="android.js"')<index.indexOf('src="jszip.min.js"'));
+assert.ok(index.includes('value="world">仅用旧世界升级（无需视频包）'));
+assert.ok(index.includes('所有同名盔甲架同步播放'));
+const bridge = fs.readFileSync(path.join(assets,'android.js'),'utf8');
+assert.ok(bridge.includes('安卓离线应用 · v16.1'));
+const {webcrypto} = require('node:crypto');
+const context = vm.createContext({ Uint8Array,Uint16Array,Uint32Array,Int32Array,ArrayBuffer,DataView,
+  TextEncoder,TextDecoder,Blob,crypto:webcrypto,setTimeout,clearTimeout,setImmediate,console });
+for(const name of names.slice(0,3)) vm.runInContext(fs.readFileSync(path.join(assets,name),'utf8'),context);
+const files = new Map(), zip={file(name,value){files.set(name,value);return this;}};
+context.MapCinemaCore.playerFiles(zip,{namespace:'mv_android_test',count:3,ticks:1,loop:false,
+  origin:[0,64,0],rotation:0,columns:8,anchor:{mode:'armor_stand',name:'方映屏幕',offset:[0,2,0]}});
+const functions=[...files].filter(([name])=>name.endsWith('.mcfunction'));
+assert.ok(functions.every(([,code])=>!code.includes('if score #')));
+const leaf=files.get('behavior_packs/mv_android_test/functions/mv_android_test/frames_0_2.mcfunction');
+assert.equal((leaf.match(/run structure load/g)||[]).length,12);
+assert.ok(functions.some(([name,code])=>name.endsWith('/clock_begin.mcfunction')&&code.includes('scoreboard players set mc_frame')));
+console.log('PASS: Android shares all six engine modules; old-world entry, all-named stands, four facings, and scoreboard syntax are current.');

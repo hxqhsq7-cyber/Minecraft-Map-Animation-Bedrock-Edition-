@@ -4,7 +4,7 @@
 
 方映是一款面向 Minecraft 基岩版的本地视频转换工具。它将视频拆分为地图画帧，生成地图数据、展示框结构和播放函数，再通过游戏内的播放时钟依次加载，让普通地图墙成为可以播放视频的屏幕。
 
-支持把视频加入已有世界，也支持用同名盔甲架设置多个同步播放点。视频转换在本机完成，无需上传素材。本目录对应 Windows 桌面版 v16.1。
+支持把视频加入已有世界，也支持用同名盔甲架设置多个同步播放点。视频转换在本机完成，无需上传素材。本仓库包含 Windows 桌面版与 Android 安装版，两端共用转换和播放核心。
 
 ## 工作原理
 
@@ -37,9 +37,14 @@ flowchart LR
 
 ## 下载
 
-前往 [GitHub Releases](https://github.com/hxqhsq7-cyber/Minecraft-Map-Animation-Bedrock-Edition-/releases) 下载 Windows x64 便携包。源码压缩包不包含 Electron 运行时；直接使用软件请选择发布附件中的 Windows ZIP。
+- [Windows x64 便携包 v16.1](https://github.com/hxqhsq7-cyber/Minecraft-Map-Animation-Bedrock-Edition-/releases/tag/v16.1)：完整解压后运行 `方映.exe`。
+- [Android 安装版 v16.1](https://github.com/hxqhsq7-cyber/Minecraft-Map-Animation-Bedrock-Edition-/releases/tag/android-v16.1)：下载 APK 安装，要求 Android 8.0 或以上和较新的 Android System WebView。
+
+请选择对应系统的发布附件；GitHub 自动提供的 Source code 压缩包是源码。
 
 ## 快速使用
+
+以下启动步骤适用于 Windows。安卓版的安装、保存、升级和源码构建方法见 [android/README.md](android/README.md)。
 
 1. 完整解压 Windows 便携包，运行 `方映.exe`，保留 EXE 旁的运行文件。
 2. 选择视频，设置屏幕大小、目标帧率、截取范围和定位方式，需要时添加音轨。
@@ -96,6 +101,7 @@ v16.1 已通过打包 EXE 的实际转换与旧世界升级流程检查，以及
 
 - `app/MapCinema.html`：转换界面、地图与结构生成、世界合并和播放函数生成。
 - `app/main.cjs`：Windows 桌面运行入口。
+- `android/`：安卓 WebView 宿主、系统文件保存桥接与 APK 构建工具。
 - `tests/`：转换、播放时序、旧世界升级及多盔甲架相关检查。
 - `tools/build.py`：Windows 打包脚本。
 - `tools/toolchain-lock.json`：官方构建工具的固定版本、下载地址与 SHA-256。

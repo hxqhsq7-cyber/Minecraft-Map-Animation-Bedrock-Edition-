@@ -13,3 +13,17 @@ __pycache__/
 *.key
 *.jks
 *.keystore
+*.p12
+/android/private/
+/android/build/
+/android/app/src/main/assets/index.html
+/android/app/src/main/assets/style.css
+/android/app/src/main/assets/jszip.min.js
+/android/app/src/main/assets/audio.js
+/android/app/src/main/assets/core.js
+/android/app/src/main/assets/disk.js
+/android/app/src/main/assets/large.js
+/android/app/src/main/assets/commands.js
+/android/app/src/main/assets/app.js
+/android/app/src/main/assets/licenses/
+/android/app/src/main/assets/THIRD_PARTY_NOTICES.md

@@ -1,0 +1,60 @@
+{
+  "jdk": "Microsoft OpenJDK 21.0.12.1+1",
+  "command_line_tools": "23.0",
+  "android_cli": "1.0.16625370",
+  "build_tools": "35.0.0",
+  "platform_api": 35,
+  "platform_revision": 2,
+  "platform_tools": "37.0.1",
+  "bootstrap_archives": [
+    {
+      "url": "https://aka.ms/download-jdk/microsoft-jdk-21.0.12.1-windows-x64.zip",
+      "checksum_url": "https://aka.ms/download-jdk/microsoft-jdk-21.0.12.1-windows-x64.zip.sha256sum.txt",
+      "name": "microsoft-jdk-21.0.12.1-windows-x64.zip",
+      "algorithm": "sha256",
+      "expected": "192441a9d27da813bada974bb88b4cf64d37a9589ed37f204374d411ca5ce07f",
+      "dest": "jdk",
+      "size": 201096952,
+      "sha256": "192441a9d27da813bada974bb88b4cf64d37a9589ed37f204374d411ca5ce07f"
+    },
+    {
+      "url": "https://dl.google.com/android/repository/commandlinetools-win-16111833_latest.zip",
+      "checksum_url": "https://dl.google.com/android/repository/repository2-1.xml",
+      "name": "commandlinetools-win-16111833_latest.zip",
+      "algorithm": "sha1",
+      "expected": "57d04f2d75eb8e8fffc5000a987e5de4b5a63e9d",
+      "dest": "cmdline-tools",
+      "size": 154957218,
+      "sha256": "e5885e2e59038c0778a85fc19f01de7ce7c567c105553f7617b936b1e0e87b2b"
+    }
+  ],
+  "sdk_packages": [
+    {
+      "package": "platforms;android-35",
+      "official_archive": "https://dl.google.com/android/repository/platform-35_r02.zip",
+      "archive_sha1": "0bb560a90a7a2cbd0dd8348224d518b638fe7949"
+    },
+    {
+      "package": "build-tools;35.0.0",
+      "official_archive": "https://dl.google.com/android/repository/build-tools_r35_windows.zip",
+      "archive_sha1": "af059bb67cf7786f45ee0db85e2d24985df1b4b6"
+    },
+    {
+      "package": "platform-tools",
+      "official_archive": "https://dl.google.com/android/repository/platform-tools_r37.0.1-win.zip",
+      "archive_sha1": "e03e78b1d80b396f1c3358e31251cb31740e1110"
+    }
+  ],
+  "installed_file_sha256": {
+    "tools\\android-sdk\\build-tools\\35.0.0\\aapt2.exe": "cbfe5deda5f7074ce47b6f33818b456ee8046a076a11af13e29c837d3c80c564",
+    "tools\\android-sdk\\build-tools\\35.0.0\\zipalign.exe": "aa2475ce201962b871fb8daec020da03fd6292c9c1f422cd0fe2e39b20d4f673",
+    "tools\\android-sdk\\build-tools\\35.0.0\\core-lambda-stubs.jar": "c8a21e0e653227d1fce74bd547c9e7278e17c016c405aa8e1f6c313b192ade31",
+    "tools\\android-sdk\\build-tools\\35.0.0\\lib\\d8.jar": "305622ad00535684534eb8f742cbf5e628a9abc09d8ea4d39d1babb95bf0cee5",
+    "tools\\android-sdk\\build-tools\\35.0.0\\lib\\apksigner.jar": "00ef9948f843fe395d2440ae3ef41405b8040a6d5d46493bd1902ac0ee6deae7",
+    "tools\\android-sdk\\platforms\\android-35\\android.jar": "4566663c3876e022b4fa4ced8c8697c4ab1688267f090114fd92d027b32e619b",
+    "tools\\android-sdk\\cmdline-tools\\latest\\lib\\apkanalyzer-classpath.jar": "88fda19963fc360efb5a44d79e6de1dd9b06e8acd64e8c1c700ccdd8ff06bf0c",
+    "tools\\android-sdk\\platform-tools\\adb.exe": "b4a6b455702684652cccf7b46258b29e653538904359a58fd4931cf3ef286b3f",
+    "tools\\jdk-21.0.12.1+1\\bin\\java.exe": "1f41cc782de7ddd8824376568f9011413d710cf225047906106d2a01a0e3f7a9",
+    "tools\\jdk-21.0.12.1+1\\bin\\keytool.exe": "e746c83b8840980eecf22572f91f952dc9e080ef6ca10c5b75c1d46b4011e1da"
+  }
+}
