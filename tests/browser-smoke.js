@@ -18,7 +18,8 @@
   check(report.savePicker === 'function' && report.directoryPicker === 'function', 'File System Access unavailable');
   check(report.diskDefault === 'disk' && report.audioBudget === '512' && report.audioBudgets.includes('4096'), 'Original large-file defaults changed');
   check(!$('prefetch-enabled').checked && $('prefetch-options').hidden, 'Preload must default off');
-  $('prefetch-enabled').checked = true; $('prefetch-frames').value = '5'; $('prefetch-height').value = '16';
+  check($('prefetch-frames').max === '200' && $('merge-prefetch-frames').max === '200', 'Preload maximum not updated in both forms');
+  $('prefetch-enabled').checked = true; $('prefetch-frames').value = '200'; $('prefetch-height').value = '16';
   let blocked = false;
   try { await fetch('https://example.com/mapcinema-network-probe'); } catch { blocked = true; }
   check(blocked, 'Unexpected external network access');
@@ -48,7 +49,7 @@
   const memoryBlob = await (await fetch($('download').href)).blob();
   const memoryZip = await JSZip.loadAsync(memoryBlob);
   const memory = await C.readVideoPackage(memoryZip);
-  check(memory.version === 6 && memory.prefetch.frames === 5 && memory.prefetch.height === 16, 'Preload converter settings lost');
+  check(memory.version === 6 && memory.prefetch.frames === 200 && memory.prefetch.height === 16, 'Preload converter settings lost');
   check(memory.frameCount > 0 && memory.audio && memory.audio.sampleCount > 0, 'Memory conversion did not include video and AAC audio');
   report.memoryVideo = { frames: memory.frameCount, bytes: memoryBlob.size, audioSamples: memory.audio.sampleCount };
   $('download').click();
@@ -113,7 +114,7 @@
     $('import-video').value = '';
     $('merge-action').value = 'world'; $('merge-action').dispatchEvent(new Event('change', { bubbles: true }));
     $('merge-prefetch-mode').value = 'on'; $('merge-prefetch-mode').dispatchEvent(new Event('change', { bubbles: true }));
-    $('merge-prefetch-frames').value = '8'; $('merge-prefetch-height').value = '20';
+    $('merge-prefetch-frames').value = '200'; $('merge-prefetch-height').value = '20';
     check(!$('merge-prefetch-frames').disabled && !$('merge-prefetch-options').hidden, 'World-only preload controls unavailable');
     check(!$('import-video').required && $('import-video').disabled && $('merger').checkValidity(), 'World-only form still requires a video package');
     check($('merge-button').textContent.includes('生成升级副本') && $('merge-action-hint').textContent.includes('不需要原视频'), 'World-only entry or guidance missing');
@@ -126,7 +127,7 @@
     async function auditWorld(zip) {
       const name = 'MapCinema-world_only_test.json', m = JSON.parse(await zip.file(name).async('string'));
       check(m.worldOnlyUpgrade && m.frames === 45 && m.totalTicks === 45 && m.fullFrameCount === 2, 'World-only output timeline or keyframes incorrect');
-      check(m.prefetch.frames === 8 && m.prefetch.height === 20 && zip.file(`behavior_packs/${m.namespace}/scripts/prefetch.js`), 'World-only preload export lost settings or script');
+      check(m.prefetch.frames === 200 && m.prefetch.height === 20 && zip.file(`behavior_packs/${m.namespace}/scripts/prefetch.js`), 'World-only preload export lost settings or script');
       check(m.controllerSize.join(',') === '1,1,1' && m.control[2] === 10, 'World-only rotated control location incorrect');
       const source = await JSZip.loadAsync(directBytes);
       const protectedPaths = Object.keys(source.files).filter(n => !source.files[n].dir && /^(db|resource_packs)\//.test(n));
@@ -205,6 +206,6 @@
       fixedModeRestored: true, worldOnlyUpgradeWithoutVideoPackage: true };
   }
   report.uiConversionPassed = true;
-  report.prefetchUI = { defaultsOff: true, converterCustomFrames: 5, converterHeight: 16, worldOnlyCustomFrames: 8, worldOnlyHeight: 20, memoryAndDisk: true, folderOutput: true };
+  report.prefetchUI = { defaultsOff: true, converterCustomFrames: 200, converterHeight: 16, worldOnlyCustomFrames: 200, worldOnlyHeight: 20, memoryAndDisk: true, folderOutput: true };
   return report;
 })

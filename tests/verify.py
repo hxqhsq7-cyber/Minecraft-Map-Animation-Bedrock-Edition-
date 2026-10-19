@@ -18,7 +18,7 @@ def main():
     manifest = json.loads((ROOT / 'release/build-manifest.json').read_bytes())
     package = ROOT / 'release' / manifest['package']
     assert digest(package) == manifest['package_sha256']
-    folder = '方映-电脑版-v18/'
+    folder = '方映-电脑版-v19/'
     with zipfile.ZipFile(package) as archive:
         assert archive.testzip() is None
         assert set(archive.namelist()) == {folder + name for name in manifest['files']}

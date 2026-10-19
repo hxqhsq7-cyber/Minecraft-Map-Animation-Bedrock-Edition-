@@ -3,7 +3,7 @@ const fs = require('node:fs'), path = require('node:path'), assert = require('no
 const root = path.resolve(__dirname, '..'), output = path.join(root, 'tests/output/reverse-encoded', String(Date.now())); fs.mkdirSync(output, { recursive: true });
 const profile = path.join(root, 'tests/runs/reverse-' + Date.now());
 const env = { ...process.env, MAPCINEMA_DATA_DIR: profile }; delete env.ELECTRON_RUN_AS_NODE;
-const exe = process.env.MAPCINEMA_TEST_EXE || path.join(root, 'release/方映-电脑版-v18/方映.exe');
+const exe = process.env.MAPCINEMA_TEST_EXE || path.join(root, 'release/方映-电脑版-v19/方映.exe');
 const log = fs.openSync(path.join(root, 'logs/reverse-exe.log'), 'w');
 const child = spawn(exe, ['--smoke-test', '--remote-debugging-port=0', '--remote-debugging-address=127.0.0.1'], { env, windowsHide: true, stdio: ['ignore', log, log] });
 let socket, sequence = 0; const pending = new Map(), pause = ms => new Promise(r => setTimeout(r, ms));

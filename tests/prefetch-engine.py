@@ -71,9 +71,9 @@ def main():
     text = LOG.read_text(encoding='utf-8', errors='replace')
     errors = [line for line in text.splitlines() if any(s in line for s in ['[PrefetchFAIL]', '[Scripting][error]', 'failed to load correctly', 'Function mv_prefetch_test/tick not found'])]
     assert not errors, errors
-    assert text.count('[PrefetchPASS]') == 9, text
-    print('PASS: BDS 1.26.30.5, nine actual-engine assertions; simulated viewers, no client rendering test.')
-    (ROOT / 'logs/prefetch-engine-results.json').write_text(json.dumps({'engine': '1.26.30.5', 'assertions': 9, 'realBlocksAndStructureAPI': True, 'commandBlockSourceEvent': True, 'sharedViewerChunkCleanup': True, 'noDroppedItems': True, 'repeatPlayback': True, 'clientRenderingTested': False}, indent=2), encoding='utf-8')
+    assert text.count('[PrefetchPASS]') == 15, text
+    print('PASS: BDS 1.26.30.5, fifteen actual-engine assertions; simulated viewers, no client rendering test.')
+    (ROOT / 'logs/prefetch-engine-results.json').write_text(json.dumps({'engine': '1.26.30.5', 'assertions': 15, 'maxFrames': 200, 'fivePerRowAndFortyRows': True, 'batchedConstructionAndCleanup': True, 'realBlocksAndStructureAPI': True, 'commandBlockSourceEvent': True, 'sharedViewerChunkCleanup': True, 'noDroppedItems': True, 'repeatPlayback': True, 'clientRenderingTested': False}, indent=2), encoding='utf-8')
 
 if __name__ == '__main__':
     main()

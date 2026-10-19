@@ -100,7 +100,7 @@ def main():
              '-validity', '10000', '-dname', 'CN=MapCinema Offline,O=MapCinema', '-storetype', 'PKCS12',
              '-keystore', key, '-storepass:file', password, '-keypass:file', password])
         key.chmod(0o600)
-    release = OUT / 'MapCinema-Android-v18.apk'
+    release = OUT / 'MapCinema-Android-v19.apk'
     run([java, '-jar', apksigner, 'sign', '--ks', key, '--ks-key-alias', 'mapcinema',
          '--ks-pass', 'file:' + str(password),
          '--v1-signing-enabled', 'true', '--v2-signing-enabled', 'true',
@@ -140,10 +140,10 @@ def main():
                 raise RuntimeError('APK asset differs from source: ' + name)
             assets.append(name)
     sha = hashlib.sha256(release.read_bytes()).hexdigest()
-    (OUT / 'MapCinema-Android-v18.sha256.txt').write_text(sha + '  ' + release.name + '\n', encoding='utf-8')
+    (OUT / 'MapCinema-Android-v19.sha256.txt').write_text(sha + '  ' + release.name + '\n', encoding='utf-8')
     (OUT / 'package-verification.json').write_text(json.dumps({
         'apk': release.name, 'bytes': release.stat().st_size, 'sha256': sha,
-        'package': 'dev.mapcinema.offline', 'version_code': 4, 'version_name': '18',
+        'package': 'dev.mapcinema.offline', 'version_code': 5, 'version_name': '19',
         'min_sdk': 26, 'target_sdk': 35, 'signing_certificate_sha256': certificate,
         'zip_crc_ok': True, 'stored_resources_and_dex_aligned': True,
         'assets_identical_to_source': assets, 'device_runtime_tested': False,

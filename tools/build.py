@@ -11,7 +11,7 @@ ROOT = Path(__file__).resolve().parents[1]
 VERSION = '44.9.0'
 TOOLCHAIN = ROOT / '.toolchain'
 RUNTIME = TOOLCHAIN / 'downloads' / f'electron-v{VERSION}-win32-x64.zip'
-TARGET = ROOT / 'release/方映-电脑版-v18'
+TARGET = ROOT / 'release/方映-电脑版-v19'
 
 
 def main():
@@ -38,9 +38,9 @@ def main():
     shutil.copytree(ROOT / 'app', TARGET / 'resources/app', dirs_exist_ok=True)
     subprocess.run([str(TOOLCHAIN / 'tools/rcedit-x64.exe'), str(exe),
                     '--set-icon', str(ROOT / 'app/icon.ico'),
-                    '--set-file-version', '18.0.0.0', '--set-product-version', '18.0.0.0',
+                    '--set-file-version', '19.0.0.0', '--set-product-version', '19.0.0.0',
                     '--set-version-string', 'ProductName', '方映',
-                    '--set-version-string', 'FileDescription', '方映电脑大音频版 v18',
+                    '--set-version-string', 'FileDescription', '方映电脑大音频版 v19',
                     '--set-version-string', 'CompanyName', 'MapCinema',
                     '--set-version-string', 'OriginalFilename', '方映.exe',
                     '--set-requested-execution-level', 'asInvoker'], check=True)
@@ -53,7 +53,7 @@ def main():
         assert stream.read(4) == b'PE\0\0'
         assert struct.unpack('<H', stream.read(2))[0] == 0x8664
     (TARGET / '开始使用.txt').write_text(
-        '方映 · 电脑大音频版 v18（Windows 10/11，64 位）\n\n'
+        '方映 · 电脑大音频版 v19（Windows 10/11，64 位）\n\n'
         '双击“方映.exe”启动。不需要安装 Python、Node.js 或浏览器。\n'
         '请将整个文件夹放到可写目录中，例如 D 盘或 F 盘；不要只移动 exe 或删除旁边的文件。\n'
         '程序配置、缓存和临时文件保存在旁边自动生成的 Data 文件夹，不写入 C 盘安装目录。\n'
@@ -63,13 +63,13 @@ def main():
         '地图动画导出 MP4：在主页第 04 区域选择方映 .mcvideo 或保留完整播放器的 .mcworld，可合成已有音轨。\n'
         '无需原视频；按地图分辨率与原播放时序导出一轮，支持直接保存和内存下载。\n'
         '此功能使用离线 H.264 与 AAC 编码；原存档只读。需要现代系统／WebView 的 H.264 编码能力。\n'
-        '上空提前加载：在设置中开启，可选 1–8 帧、上方 8–64 格，固定在观看者所在的 16×16 区块；跨区块清理并迁移。\n'
+        '上空提前加载：在设置中开启，可选 1–200 帧、上方 8–64 格，每排 5 幅完整画面向上堆叠；按观看者的 16×16 区块迁移，实际墙体可超出区块，需要足够空中空间和高度。\n'
         '旧世界可在合并／升级面板单独开启，无需原视频包。需要基岩版 1.21.90+ 稳定脚本 API；只使用空中空气区。\n'
         '此功能仍需客户端实测，无法保证消除空白；额外地图刷新可能增加卡顿。\n'
         '所有视频与音频在本机处理，不上传。退出处理中的任务会要求确认。播放时钟固定大小，开始前等待 20 游戏刻；画面变化时约每 40 游戏刻补写完整帧。\n'
         '没有视频包：找到“已有世界：合并／升级”，将“处理内容”改为“仅用旧世界升级（无需视频包）”，只选择 .mcworld，再点“生成升级副本”。\n'
         '此入口暂支持世界中只有一个完整方映播放器，固定坐标和命名盔甲架均可；保留地图 ID、时序和音轨，并补入周期完整帧。\n'
-        '升级副本名称带“播放修复 v18”；只替换 exe 不会更新已导入的世界。原世界文件保留。\n\n'
+        '升级副本名称带“播放修复 v19”；只替换 exe 不会更新已导入的世界。原世界文件保留。\n\n'
         '音频额度选项保持原 v13 的 128–4096 MiB，默认 512 MiB；额度不代表实际可用内存。\n'
         '压缩音频仍需完整解码，PCM WAV 可以分块读取；大文件是否成功取决于设备内存、格式与存储空间。\n'
         '.mcvideo 需在工具中合并进世界；.mcworld 才交给 Minecraft 导入。\n'
@@ -92,7 +92,7 @@ def main():
               'files': {p.relative_to(TARGET).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest() for p in files}}
     print('Built Windows executable:', exe, flush=True)
     print('Runtime size:', sum(p.stat().st_size for p in files), 'bytes', flush=True)
-    package = ROOT / 'release/方映-电脑版-v18-Windows-x64.zip'
+    package = ROOT / 'release/方映-电脑版-v19-Windows-x64.zip'
     with zipfile.ZipFile(package, 'w', zipfile.ZIP_DEFLATED, compresslevel=6) as archive:
         for file in files:
             archive.write(file, file.relative_to(ROOT / 'release').as_posix())

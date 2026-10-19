@@ -57,7 +57,7 @@ async function start({ show = true } = {}) {
     cancel: !(local(details.url) || details.url.startsWith('blob:' + origin + '/') || details.url.startsWith('data:'))
   }));
   const win = new BrowserWindow({ width: 1280, height: 900, minWidth: 860, minHeight: 600,
-    show: false, title: '方映 · 电脑大音频版 v18', icon: path.join(__dirname, 'icon.png'),
+    show: false, title: '方映 · 电脑大音频版 v19', icon: path.join(__dirname, 'icon.png'),
     backgroundColor: '#f4f5ef', webPreferences: { nodeIntegration: false, contextIsolation: true,
       sandbox: true, webSecurity: true, backgroundThrottling: false, spellcheck: false } });
   Menu.setApplicationMenu(Menu.buildFromTemplate([

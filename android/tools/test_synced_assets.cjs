@@ -14,8 +14,10 @@ assert.ok(index.includes('value="world">仅用旧世界升级（无需视频包�
 assert.ok(index.includes('所有同名盔甲架同步播放'));
 assert.ok(index.includes('id="prefetch-enabled"') && index.includes('id="merge-prefetch-mode"') && index.includes('16×16'));
 assert.ok(index.includes('id="reverse-panel"') && index.includes('src="reverse.js"') && index.includes('src="media-bundle.js"'));
+assert.equal((index.match(/max="200" value="3"/g)||[]).length,2);
+assert.ok(index.includes('每排 5 幅完整画面'));
 const bridge = fs.readFileSync(path.join(assets,'android.js'),'utf8');
-assert.ok(bridge.includes('安卓离线应用 · v18'));
+assert.ok(bridge.includes('安卓离线应用 · v19'));
 const {webcrypto} = require('node:crypto');
 const context = vm.createContext({ Uint8Array,Uint16Array,Uint32Array,Int32Array,ArrayBuffer,DataView,
   TextEncoder,TextDecoder,Blob,crypto:webcrypto,setTimeout,clearTimeout,setImmediate,console });

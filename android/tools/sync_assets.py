@@ -57,7 +57,7 @@ def sync():
         shutil.copyfile(ROOT.parent / 'app' / name, DEST / name)
     shutil.copytree(ROOT.parent / 'docs/licenses', DEST / 'licenses', dirs_exist_ok=True)
     shutil.copyfile(ROOT.parent / 'THIRD_PARTY_NOTICES.md', DEST / 'THIRD_PARTY_NOTICES.md')
-    print('Synced Android v18 assets from the shared HTML.')
+    print('Synced Android v19 assets from the shared HTML.')
 
 
 if __name__ == '__main__':
