@@ -11,8 +11,9 @@ const index = fs.readFileSync(path.join(assets,'index.html'),'utf8');
 assert.ok(index.indexOf('src="android.js"')<index.indexOf('src="jszip.min.js"'));
 assert.ok(index.includes('value="world">仅用旧世界升级（无需视频包）'));
 assert.ok(index.includes('所有同名盔甲架同步播放'));
+assert.ok(index.includes('id="prefetch-enabled"') && index.includes('id="merge-prefetch-mode"') && index.includes('16×16'));
 const bridge = fs.readFileSync(path.join(assets,'android.js'),'utf8');
-assert.ok(bridge.includes('安卓离线应用 · v16.1'));
+assert.ok(bridge.includes('安卓离线应用 · v17'));
 const {webcrypto} = require('node:crypto');
 const context = vm.createContext({ Uint8Array,Uint16Array,Uint32Array,Int32Array,ArrayBuffer,DataView,
   TextEncoder,TextDecoder,Blob,crypto:webcrypto,setTimeout,clearTimeout,setImmediate,console });

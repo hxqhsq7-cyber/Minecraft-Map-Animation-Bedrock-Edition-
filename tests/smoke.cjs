@@ -10,7 +10,7 @@ fs.mkdirSync(output, { recursive: true });
 const profile = path.join(__dirname, 'runs', run);
 const env = { ...process.env, MAPCINEMA_DATA_DIR: profile };
 delete env.ELECTRON_RUN_AS_NODE;
-const exe = path.join(root, 'release', '方映-电脑版-v16.1', '方映.exe');
+const exe = path.join(root, 'release', '方映-电脑版-v17', '方映.exe');
 const log = fs.openSync(path.join(root, 'logs', 'exe-smoke.log'), 'w');
 const child = spawn(exe, ['--smoke-test', '--remote-debugging-port=0', '--remote-debugging-address=127.0.0.1'],
   { env, windowsHide: true, stdio: ['ignore', log, log] });

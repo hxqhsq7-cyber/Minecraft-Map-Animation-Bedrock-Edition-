@@ -96,7 +96,7 @@
     const storage=document.getElementById('storage-mode');if(storage)storage.value='disk';
     const capacity=document.getElementById('capacity');if(capacity)capacity.value='4096';
     if(storage)storage.dispatchEvent(new Event('input',{bubbles:true}));
-    const badge=document.querySelector('.badge');if(badge)badge.textContent='安卓离线应用 · v16.1';
+    const badge=document.querySelector('.badge');if(badge)badge.textContent='安卓离线应用 · v17';
     const footer=document.querySelector('footer a');if(footer){const label=document.createElement('span');label.textContent='全部资源已内置 · 无需联网';footer.replaceWith(label);}
     const busy=()=>{const a=document.getElementById('convert'),b=document.getElementById('merge-button');native.setBusy(!!(a&&b&&a.disabled&&b.disabled));};
     for(const id of ['convert','merge-button']){const button=document.getElementById(id);if(button)new MutationObserver(busy).observe(button,{attributes:true,attributeFilter:['disabled']});}

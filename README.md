@@ -33,12 +33,13 @@ flowchart LR
 - 导出可复用视频包、可导入世界文件或世界文件夹。
 - 将视频合并进已有世界，并输出世界副本。
 - 没有原视频包时，可升级保留完整方映播放器数据的旧世界。
+- 可选区块上空提前加载：自定义 1–8 帧，在观看者所在的 16×16 区块固定放置临时地图墙，跨区块迁移。
 - Windows 版提供直接写入磁盘的转换方式和便携式 EXE。
 
 ## 下载
 
-- [Windows x64 便携包 v16.1](https://github.com/hxqhsq7-cyber/Minecraft-Map-Animation-Bedrock-Edition-/releases/tag/v16.1)：完整解压后运行 `方映.exe`。
-- [Android 安装版 v16.1](https://github.com/hxqhsq7-cyber/Minecraft-Map-Animation-Bedrock-Edition-/releases/tag/android-v16.1)：下载 APK 安装，要求 Android 8.0 或以上和较新的 Android System WebView。
+- [Windows x64 便携包 v17](https://github.com/hxqhsq7-cyber/Minecraft-Map-Animation-Bedrock-Edition-/releases/tag/v17)：完整解压后运行 `方映.exe`。
+- [Android 安装版 v17](https://github.com/hxqhsq7-cyber/Minecraft-Map-Animation-Bedrock-Edition-/releases/tag/android-v17)：下载 APK 安装，要求 Android 8.0 或以上和较新的 Android System WebView。
 
 请选择对应系统的发布附件；GitHub 自动提供的 Source code 压缩包是源码。
 
@@ -79,6 +80,20 @@ flowchart LR
 
 此入口需要世界中保留一个完整的方映播放器及元数据。它不是从任意地图墙恢复视频的工具；数据缺失或存在多个播放器时，当前版本无法自动升级。仅替换电脑软件不会更新已经导入游戏的世界。
 
+## 上空提前加载（实验性）
+
+新建视频时，在“设置播放器”开启“上空提前加载”，填写提前帧数和高度。默认关闭；开启后的默认值为提前 3 帧、距玩家脚下 12 格，可设置 1–8 帧、8–64 格。
+
+已有世界无需重新抽帧：进入“已有世界：合并／升级”，选择“仅用旧世界升级（无需视频包）”，在“上空提前加载 · 16×16 区块”选择“开启并自定义”，生成并导入副本。合并、修复和优化也能单独调整此设置。只更新软件不会修改游戏里已导入的世界。
+
+播放器为同维度、距画面原点 64 格内的观看者建立预加载墙。同一区块共用一组墙，位置按区块边界固定，玩家在区块内移动时不搬迁，也不随跳跃升降。每面墙深 2 格，最多 8 面，横纵尺寸与原屏幕相同，水平范围始终在当前 16×16 区块内。跨区块后清理旧墙并在新区块上空重建；旧区块还有观看者时保留。多人同时进入多个新区块时，每游戏刻最多新建一组。
+
+预加载墙显示后续保存的播放帧，复用原地图 ID，不复制地图像素、不重复播放音轨。稳定播放时轮换更新一面墙；循环时提前读取下一轮开头，非循环结束或停止后清理。合并静止帧会改变每个“提前帧”对应的实际时长；短片帧数不足时最多建立实际帧数的墙。
+
+开始前先停止原播放器，退出世界并导出。预留空中区域：只有整组墙所占区域都是空气且高度合法时才创建，不覆盖建筑。在临时墙所在区域搭建可能影响清理；请勿在播放期间改造这些方块。传送或卸载使旧区块无法访问时，清理记录保存在世界中，待区块重新加载后补清理；关闭功能后保留必要的清理脚本。每个视频最多同时保留 64 个活动或待清理区块，达到上限时等待清理。
+
+开启此功能的世界使用稳定版 `@minecraft/server 2.0.0`，最低引擎版本为 1.21.90；未开启过的输出继续使用原命令播放器。它尝试让客户端提前接触后续地图，**不能保证提前渲染或消除空白**，位于头顶、遮挡、客户端剔除及缓存限制仍可能影响效果；额外完整墙刷新也可能增加卡顿。先用较低帧数测试。[官方渲染与模拟距离说明](https://learn.microsoft.com/en-us/minecraft/creator/documents/simulationrenderdistanceguide?view=minecraft-bedrock-stable)区分了客户端渲染和服务端区块模拟。
+
 ## 性能与兼容性
 
 - 目标帧率不等于实际播放帧率。视频长度、独立地图数量、屏幕尺寸、播放点数量、磁盘速度和客户端资源限制都会影响效果。
@@ -91,9 +106,11 @@ flowchart LR
 
 ## 验证范围
 
-v16.1 已通过打包 EXE 的实际转换与旧世界升级流程检查，以及导出 ZIP、地图引用、帧时序和音轨数据核验。
+v17 已通过打包 EXE 的实际转换与旧世界升级流程检查，以及导出 ZIP、地图引用、帧时序和音轨数据核验。
 
 已使用官方 Bedrock Dedicated Server **1.26.30.5** 验证修复后函数的加载、播放时钟计数和首帧推进；也在已加载区块内，用非循环短视频样例验证了脉冲命令方块连续两次启动并播放至结束。
+
+v17 的提前加载另通过 9 项官方引擎断言，覆盖实际命令方块事件、结构 API 放墙、多人共用、跨区块清理、无地图物品掉落、二次播放和结束清理；观看者坐标由测试模拟，没有连接客户端。电脑 EXE 流程验证自定义设置、新视频包与无视频包旧世界升级的内存、磁盘和文件夹输出。安卓版同步共享核心并校验签名，手机安装和客户端预渲染效果尚未验收。
 
 这些检查不代表所有基岩版版本和设备都已兼容，也不替代 Minecraft 客户端中的整段视频画面、流畅度与音画同步验收。
 
@@ -122,10 +139,13 @@ v16.1 已通过打包 EXE 的实际转换与旧世界升级流程检查，以及
 node tests/playback.cjs
 node tests/world-only.cjs
 node tests/multi-anchor.cjs
+node tests/prefetch.cjs
 node tests/smoke.cjs
 python tests/verify.py
 ```
 
 `smoke.cjs` 在构建后运行打包的 EXE，并使用独立测试配置与合成素材验证导出。`tests/fixtures/reference-*.html` 是兼容性回归使用的旧版参考实现，不是桌面软件入口。
+
+`tests/prefetch-engine.py` 可在已准备官方 BDS 1.26.30.5 后运行，路径约定见脚本开头。它在仓库 `.toolchain/prefetch-engine` 创建独立测试服务端，使用合成帧和模拟观看者，不改动原服务端世界。
 
 第三方依赖与许可说明见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。

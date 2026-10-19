@@ -58,7 +58,7 @@ select{width:100%;min-width:0;text-overflow:ellipsis}
 </style>
 </head>
 <body>
-  <header class="topbar"><a class="brand" href="#"><span class="brand-mark">▦</span><span>方映 <small>MapCinema</small></span></a><span class="badge">基岩版 · v16.1</span></header>
+  <header class="topbar"><a class="brand" href="#"><span class="brand-mark">▦</span><span>方映 <small>MapCinema</small></span></a><span class="badge">基岩版 · v17</span></header>
   <main>
     <section class="intro"><span class="eyebrow">让地图，动起来。</span><h1>把一段视频，<br>搬进你的世界。</h1><p>把视频保存为可复用的视频包，加入你已经创建的世界。<br class="desktop">手机本地转换，地图、结构、音轨和命令链一起带走。</p><div class="chips"><span>安卓 / Windows</span><span>支持已有世界</span><span>视频不上传</span></div></section>
     <form id="converter">
@@ -78,6 +78,7 @@ select{width:100%;min-width:0;text-overflow:ellipsis}
           <div id="anchor-options" hidden><div class="field"><label for="anchor-name">盔甲架名称</label><input id="anchor-name" value="方映屏幕" maxlength="40"><p class="hint">所有同名盔甲架同步播放同一个视频；每帧重新查找，后加入的同名播放点在下一播放帧跟上当前进度。结果区提供新增同名播放点和调整朝向的可复制指令。</p></div><div class="field"><label>画面相对盔甲架脚下的偏移 <span>世界 X / Y / Z 方向，整数格</span></label><div class="coordinates"><label>X<input id="anchor-x" type="number" value="0" min="-1024" max="1024"></label><label>Y<input id="anchor-y" type="number" value="2" min="-1024" max="1024"></label><label>Z<input id="anchor-z" type="number" value="0" min="-1024" max="1024"></label></div><p class="hint">默认上方 2 格。屏幕正面按每个盔甲架当前水平朝向，取最近的东／南／西／北方向；偏移仍按世界坐标计算。移动或转向会留下旧画面，请选空地并避开控制区。</p></div></div>
           <div class="field"><label id="origin-label">屏幕结构原点 <span>世界绝对坐标</span></label><div class="coordinates"><label>X<input id="pos-x" type="number" value="0" min="-30000000" max="30000000" required></label><label>Y<input id="pos-y" type="number" value="5" min="-64" max="319" required></label><label>Z<input id="pos-z" type="number" value="0" min="-30000000" max="30000000" required></label></div><p class="hint" id="origin-hint">导出后也能修改播放命令中的坐标，无需重新转换。</p></div>
           <div class="two-columns"><div class="field"><label for="facing">屏幕正面朝向</label><select id="facing"><option value="0">南 · +Z</option><option value="180">北 · −Z</option><option value="270">东 · +X</option><option value="90">西 · −X</option></select></div><label class="toggle"><input id="loop" type="checkbox" checked><span>循环播放</span></label></div>
+          <div class="field"><label class="toggle"><input id="prefetch-enabled" type="checkbox"><span>上空提前加载（实验性）</span></label></div><div id="prefetch-options" hidden><div class="two-columns"><div class="field"><label for="prefetch-frames">提前帧数 / 墙数</label><input id="prefetch-frames" type="number" min="1" max="8" value="3"></div><div class="field"><label for="prefetch-height">距玩家脚下高度 / 格</label><input id="prefetch-height" type="number" min="8" max="64" value="12"></div></div><p class="hint">固定在玩家所在的 16×16 区块上空，最多 8 面墙；跨区块清理旧位置并重建。同区块观看者共用，播放结束自动清理。仅使用空中空气区，不覆盖已有建筑。额外地图刷新可能增加卡顿，不能保证客户端提前渲染；需基岩版 1.21.90+ 稳定脚本 API。</p></div>
           <div class="field"><label class="toggle"><input id="dedupe" type="checkbox" checked><span>合并连续重复帧</span></label><p class="hint">逐像素比较整幅地图画面，完全相同才合并；延长画面停留时间，保留原播放节奏。转换后显示节省帧数。不连续的相同画面按出现顺序保留。新视频包请用本版或更新版加入世界。</p></div>
           <div class="field"><label class="toggle"><input id="reuse-tiles" type="checkbox" checked><span id="reuse-label">复用地图，周期完整刷新</span></label><p class="hint">重复画面或重复地图块共用地图 ID，跨位置、跨时间也能复用。默认无损，静止区域通常不重建展示框，画面变化时约每 40 游戏刻插入完整刷新帧以恢复缺失区域。地图数量过多仍可能触及客户端资源限制。</p></div>
           <div class="field"><label for="tile-threshold">轻微变化处理</label><select id="tile-threshold"><option value="0" selected>无损：仅复用完全相同的地图块</option><option value="3">轻度省资源：平均色差 ≤ 3，细节可能变化</option><option value="8">强省资源：平均色差 ≤ 8，细节可能变化</option></select><p class="hint">省资源模式会暂时保留轻微变化的旧画面块，可能滞留文字或小物体；字幕、文字类视频建议无损。持续运动仍会产生新地图。</p></div>
@@ -97,7 +98,7 @@ select{width:100%;min-width:0;text-overflow:ellipsis}
       <p id="error" class="error" role="alert" hidden></p>
     </form>
     <section class="panel merge-panel" id="merge-panel"><div class="section-title"><span class="step">03</span><h2>已有世界：合并／升级</h2></div><p class="hint">没有视频包也可升级：在“处理内容”中选择“仅用旧世界升级（无需视频包）”，只选 .mcworld。已有 .mcvideo 时仍可合并、修复或优化；所有操作均输出世界副本。</p>
-      <form id="merger"><div class="two-columns"><div class="field"><label for="import-video" id="import-video-label">视频包 .mcvideo</label><input id="import-video" type="file" accept=".mcvideo,.zip" required></div><div class="field"><label for="import-world">已有世界 .mcworld</label><input id="import-world" type="file" accept=".mcworld,.zip" required></div></div><div class="field"><label for="merge-action">处理内容</label><select id="merge-action"><option value="install">加入视频（自动更新播放时钟）</option><option value="world">仅用旧世界升级（无需视频包）</option><option value="repair">修复／补配音（保留地图与帧）</option><option value="optimize">优化已安装视频（重建地图引用）</option></select><p class="hint" id="merge-action-hint">加入／修复／优化需要原 .mcvideo；没有视频包时改选“仅用旧世界升级（无需视频包）”。</p></div><div class="field"><label class="toggle"><input id="merge-reuse" type="checkbox" checked><span>合并旧包时复用相同地图</span></label><p class="hint">固定坐标模式跳过静止块刷新，盔甲架模式加载完整帧。已有视频选“优化已安装视频”，使用原 .mcvideo 和已安装的世界，无需重新抽帧。优化会重建本视频的地图引用及帧结构，保留旧数据库记录，文件可能增大。原文件保持原样；先停止播放再导出，优化后完全重启游戏再测试。</p></div><div class="field"><label for="merge-anchor-mode">合并后的画面定位</label><select id="merge-anchor-mode"><option value="package" selected>沿用视频包／已安装播放器</option><option value="fixed">固定坐标</option><option value="armor_stand">命名盔甲架</option></select><p class="hint">两种方式均可选。已安装视频切换定位方式或修改锚点时，选择“优化已安装视频”，会重建帧结构，无需重新抽帧。“修复／补配音”只沿用现有定位。</p></div><div id="merge-anchor-options" hidden><div class="field"><label for="merge-anchor-name">盔甲架名称</label><input id="merge-anchor-name" value="方映屏幕" maxlength="40"></div><div class="field"><label>画面偏移 X / Y / Z</label><div class="coordinates"><label>X<input id="merge-anchor-x" type="number" value="0" min="-1024" max="1024"></label><label>Y<input id="merge-anchor-y" type="number" value="2" min="-1024" max="1024"></label><label>Z<input id="merge-anchor-z" type="number" value="0" min="-1024" max="1024"></label></div></div></div><div class="field"><label for="merge-audio-file">补充／更换 13 号唱片音轨（可选）</label><input id="merge-audio-file" type="file" accept="audio/*,video/mp4,.wav,.ogg,.mp3,.m4a,.mp4"><p class="hint">可选原视频或独立音频；留空沿用包内／世界现有音轨。新音轨使用上方“音频处理额度”，安卓也可提高到 4 GiB。给已安装的视频补配音时，处理内容选择“修复／补配音”，保留原地图，不重新抽帧。</p></div><div class="field"><label for="merge-audio-start">补充音轨起点 / 秒</label><input id="merge-audio-start" type="number" min="0" step="0.001" value="0"><p class="hint">按视频包的完整播放时长截取，不足的尾部补静音。</p></div><div class="field"><label for="merge-output">合并输出</label><select id="merge-output"><option value="world">世界文件 .mcworld</option><option value="folder">空的世界文件夹（电脑大容量）</option></select><p class="hint">沿用上方“处理方式”。超大 ZIP64 世界若无法被游戏导入，可改选文件夹。选择文件夹前请关闭游戏，且输出文件夹必须为空。</p></div><button id="merge-button" type="submit" class="merge-button">生成世界副本 ↗</button></form>
+      <form id="merger"><div class="two-columns"><div class="field"><label for="import-video" id="import-video-label">视频包 .mcvideo</label><input id="import-video" type="file" accept=".mcvideo,.zip" required></div><div class="field"><label for="import-world">已有世界 .mcworld</label><input id="import-world" type="file" accept=".mcworld,.zip" required></div></div><div class="field"><label for="merge-action">处理内容</label><select id="merge-action"><option value="install">加入视频（自动更新播放时钟）</option><option value="world">仅用旧世界升级（无需视频包）</option><option value="repair">修复／补配音（保留地图与帧）</option><option value="optimize">优化已安装视频（重建地图引用）</option></select><p class="hint" id="merge-action-hint">加入／修复／优化需要原 .mcvideo；没有视频包时改选“仅用旧世界升级（无需视频包）”。</p></div><div class="field"><label class="toggle"><input id="merge-reuse" type="checkbox" checked><span>合并旧包时复用相同地图</span></label><p class="hint">固定坐标模式跳过静止块刷新，盔甲架模式加载完整帧。已有视频选“优化已安装视频”，使用原 .mcvideo 和已安装的世界，无需重新抽帧。优化会重建本视频的地图引用及帧结构，保留旧数据库记录，文件可能增大。原文件保持原样；先停止播放再导出，优化后完全重启游戏再测试。</p></div><div class="field"><label for="merge-anchor-mode">合并后的画面定位</label><select id="merge-anchor-mode"><option value="package" selected>沿用视频包／已安装播放器</option><option value="fixed">固定坐标</option><option value="armor_stand">命名盔甲架</option></select><p class="hint">两种方式均可选。已安装视频切换定位方式或修改锚点时，选择“优化已安装视频”，会重建帧结构，无需重新抽帧。“修复／补配音”只沿用现有定位。</p></div><div id="merge-anchor-options" hidden><div class="field"><label for="merge-anchor-name">盔甲架名称</label><input id="merge-anchor-name" value="方映屏幕" maxlength="40"></div><div class="field"><label>画面偏移 X / Y / Z</label><div class="coordinates"><label>X<input id="merge-anchor-x" type="number" value="0" min="-1024" max="1024"></label><label>Y<input id="merge-anchor-y" type="number" value="2" min="-1024" max="1024"></label><label>Z<input id="merge-anchor-z" type="number" value="0" min="-1024" max="1024"></label></div></div></div><div class="field"><label for="merge-prefetch-mode">上空提前加载 · 16×16 区块</label><select id="merge-prefetch-mode"><option value="keep">沿用视频包／旧世界设置</option><option value="on">开启并自定义</option><option value="off">关闭并清理旧墙</option></select><p class="hint">“仅用旧世界升级”也能添加此功能，无需原视频包。请先停止播放，再导出并导入世界副本。</p></div><div id="merge-prefetch-options" hidden><div class="two-columns"><div class="field"><label for="merge-prefetch-frames">提前帧数 / 墙数</label><input id="merge-prefetch-frames" type="number" min="1" max="8" value="3"></div><div class="field"><label for="merge-prefetch-height">距玩家脚下高度 / 格</label><input id="merge-prefetch-height" type="number" min="8" max="64" value="12"></div></div><p class="hint">固定在玩家所在的 16×16 区块上空，最多 8 面墙；跨区块清理旧位置并重建。同区块观看者共用，播放结束自动清理。仅使用空中空气区，不覆盖已有建筑。额外地图刷新可能增加卡顿，不能保证客户端提前渲染；需基岩版 1.21.90+ 稳定脚本 API。</p></div><div class="field"><label for="merge-audio-file">补充／更换 13 号唱片音轨（可选）</label><input id="merge-audio-file" type="file" accept="audio/*,video/mp4,.wav,.ogg,.mp3,.m4a,.mp4"><p class="hint">可选原视频或独立音频；留空沿用包内／世界现有音轨。新音轨使用上方“音频处理额度”，安卓也可提高到 4 GiB。给已安装的视频补配音时，处理内容选择“修复／补配音”，保留原地图，不重新抽帧。</p></div><div class="field"><label for="merge-audio-start">补充音轨起点 / 秒</label><input id="merge-audio-start" type="number" min="0" step="0.001" value="0"><p class="hint">按视频包的完整播放时长截取，不足的尾部补静音。</p></div><div class="field"><label for="merge-output">合并输出</label><select id="merge-output"><option value="world">世界文件 .mcworld</option><option value="folder">空的世界文件夹（电脑大容量）</option></select><p class="hint">沿用上方“处理方式”。超大 ZIP64 世界若无法被游戏导入，可改选文件夹。选择文件夹前请关闭游戏，且输出文件夹必须为空。</p></div><button id="merge-button" type="submit" class="merge-button">生成世界副本 ↗</button></form>
       <p class="hint">此步骤会将地图像素和播放器写入世界副本。电脑磁盘模式按块读取大文件；兼容模式在内存中处理。没有 .mcworld 文件时，需先导出或获取该世界的存档压缩包。</p>
     </section>
     <section class="how-it-works"><div><span>01 / 视频</span><p>在本机按游戏刻抽帧</p></div><div><span>02 / 地图 + 结构</span><p>写入地图像素和展示框引用</p></div><div><span>03 / 世界</span><p>用 structure 命令链逐帧播放</p></div></section>
@@ -825,8 +826,162 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     return { tag, named, bound: named, allBound: `@e[type=armor_stand,tag=${tag}]`,
       offset: anchor.offset.map(n => n ? `~${n}` : '~').join(' ') };
   }
+  function normalizePrefetch(value) {
+    if (!value || value.enabled === false) return null;
+    if (value.enabled !== true || !Number.isInteger(value.frames) || value.frames < 1 || value.frames > 8 ||
+        !Number.isInteger(value.height) || value.height < 8 || value.height > 64) throw new Error('提前加载需要 1–8 帧、上方 8–64 格；预加载范围固定为当前 16×16 区块。');
+    return { enabled: true, frames: value.frames, height: value.height };
+  }
+  // Serialized into the optional behavior-pack script: no browser globals or external files.
+  function prefetchRuntime(config, world, system) {
+    const { namespace: ns, objective, columns, rows, count, controlZ, anchor, loop, prefetch } = config;
+    const key = ns + ':prefetch', eventId = ns + ':prefetch', slots = prefetch ? Math.min(prefetch.frames, count) : 0;
+    let controller = null, stations = [], initialized = false, lastFrame = -1, step = 0, lastError = '';
+    const dims = ['minecraft:overworld', 'minecraft:nether', 'minecraft:the_end'];
+    const integer = n => Number.isInteger(n) && Math.abs(n) <= 30000016;
+    const locationOK = p => p && ['x', 'y', 'z'].every(k => integer(p[k])) && p.y >= -64 && p.y <= 319;
+    const stationOK = s => dims.includes(s?.dim) && locationOK(s) && [s.columns, s.rows].every(n => Number.isInteger(n) && n >= 1 && n <= 16) && Number.isInteger(s.slots) && s.slots >= 1 && s.slots <= 8 && (s.x % 16 + 16) % 16 + s.columns <= 16 && (s.z % 16 + 16) % 16 + 2 * s.slots <= 16;
+    function report(e) { const message = String(e); if (message !== lastError) { console.warn('[MapCinema prefetch] ' + message); lastError = message; } }
+    function save() {
+      world.setDynamicProperty(key, controller || stations.length ? JSON.stringify({ controller, stations: stations.map(({ cache, ...s }) => s) }) : undefined);
+    }
+    function block(dim, p) { try { return dim.getBlock(p); } catch { return undefined; } }
+    function cells(s, slot, action) {
+      const dim = world.getDimension(s.dim);
+      // Frames go first so removing their backing cannot drop a map item.
+      for (const z of [1, 0]) for (let x = 0; x < s.columns; x++) for (let y = 0; y < s.rows; y++) {
+        const b = block(dim, { x: s.x + x, y: s.y + y, z: s.z + slot * 2 + z });
+        if (!b || action(b, z) === false) return false;
+      }
+      return true;
+    }
+    function clear(s, slot) {
+      // Do not queue writes into unloaded chunks. Keep pending cleanup in world storage.
+      if (!cells(s, slot, () => true)) return false;
+      return cells(s, slot, (b, z) => { if (b.typeId === (z ? 'minecraft:frame' : 'minecraft:stone')) b.setType('minecraft:air'); });
+    }
+    function cleanup(s) { let done = true; for (let i = 0; i < s.slots; i++) if (!clear(s, i)) done = false; return done; }
+    function stop() { controller = null; for (const s of stations) s.pending = true; save(); }
+    function start(source) {
+      if (!prefetch || source?.typeId !== 'minecraft:repeating_command_block') return;
+      stop(); controller = { ...source.location, dim: source.dimension.id }; lastFrame = -1; step = 0; save();
+    }
+    function active() {
+      if (!controller || !prefetch) return false;
+      const dim = world.getDimension(controller.dim), b = block(dim, controller);
+      const score = world.scoreboard.getObjective(objective);
+      return b?.typeId === 'minecraft:repeating_command_block' && score?.getScore('mc_active') === 1;
+    }
+    function update() {
+      if (!initialized) return;
+      if (controller && !active()) stop();
+      const score = controller ? world.scoreboard.getObjective(objective) : null;
+      const frame = score?.getScore('mc_frame') ?? -1;
+      if (frame !== lastFrame) { step += frame >= lastFrame ? frame - lastFrame : count - lastFrame + frame; lastFrame = frame; }
+      const wanted = new Map();
+      if (controller) {
+        const dim = world.getDimension(controller.dim);
+        const screens = anchor ? dim.getEntities({ type: 'minecraft:armor_stand', name: anchor.name }).map(e => ({ x: e.location.x + anchor.offset[0], y: e.location.y + anchor.offset[1], z: e.location.z + anchor.offset[2] })) : [{ x: controller.x, y: controller.y, z: controller.z - controlZ }];
+        for (const p of world.getAllPlayers()) {
+          if (p.dimension.id !== controller.dim || !screens.some(s => (s.x - p.location.x) ** 2 + (s.y - p.location.y) ** 2 + (s.z - p.location.z) ** 2 <= 64 ** 2)) continue;
+          const cx = Math.floor(p.location.x / 16) * 16, cz = Math.floor(p.location.z / 16) * 16;
+          const id = `${controller.dim}:${cx}:${cz}`;
+          if (!wanted.has(id)) wanted.set(id, { id, dim: controller.dim, x: cx + Math.floor((16 - columns) / 2), y: Math.floor(p.location.y) + prefetch.height, z: cz + Math.floor((16 - slots * 2) / 2), columns, rows, slots });
+        }
+      }
+      let changed = false;
+      stations = stations.filter(s => {
+        if (!s.pending && wanted.has(s.id)) return true;
+        if (!s.pending) { s.pending = true; changed = true; }
+        if (cleanup(s)) { changed = true; return false; }
+        return true;
+      });
+      if (changed) save();
+      // ponytail: at most one new chunk station per tick; no per-player ticking areas.
+      for (const s of wanted.values()) {
+        if (stations.some(old => old.id === s.id)) continue;
+        if (stations.length >= 64) { report('预加载区块达到 64 个上限，等待旧区块清理。'); break; }
+        const dim = world.getDimension(s.dim), range = dim.heightRange;
+        if (s.y < range.min || s.y + rows > range.max) { report('玩家上方空间超出维度高度，跳过预加载墙。'); continue; }
+        if (!Array.from({ length: slots }, (_, i) => cells(s, i, b => b.isAir)).every(Boolean)) { report('玩家所在区块上方有方块或区块未加载，跳过预加载墙。'); continue; }
+        stations.push({ ...s, cache: [] }); save(); break;
+      }
+      for (const s of stations) {
+        if (s.pending || !wanted.has(s.id)) continue;
+        s.cache ||= [];
+        for (let ahead = 1; ahead <= slots; ahead++) {
+          const slot = ((step + ahead - 1) % slots + slots) % slots;
+          const next = frame + ahead, target = loop ? next % count : next < count ? next : -1;
+          if (s.cache[slot] === target) continue;
+          if (!cells(s, slot, (b, z) => b.isAir || b.typeId === (z ? 'minecraft:frame' : 'minecraft:stone'))) { report('预加载墙空间被占用，暂停刷新该墙。'); continue; }
+          if (target < 0) { if (clear(s, slot)) s.cache[slot] = target; continue; }
+          world.structureManager.place(`${ns}:p${String(target).padStart(6, '0')}`, world.getDimension(s.dim), { x: s.x, y: s.y, z: s.z + slot * 2 });
+          s.cache[slot] = target;
+        }
+      }
+    }
+    system.afterEvents.scriptEventReceive.subscribe(event => {
+      if (event.id !== eventId) return;
+      try {
+        const source = event.sourceBlock;
+        if (event.message === 'tick' && source?.typeId === 'minecraft:repeating_command_block') {
+          const score = world.scoreboard.getObjective(objective);
+          if (score?.getScore('mc_active') === 1) {
+            if (score.getScore('mc_prefill') === 1) { start(source); score.setScore('mc_prefill', 0); }
+            const { x, y, z } = source.location;
+            source.dimension.runCommand(`execute positioned ${x} ${y} ${z} run function ${ns}/tick`);
+          }
+        } else if (event.message === 'stop') stop();
+      } catch (e) { report(e); }
+    });
+    system.run(() => {
+      try {
+        const value = world.getDynamicProperty(key);
+        if (typeof value === 'string') {
+          const saved = JSON.parse(value);
+          if (Array.isArray(saved.stations) && saved.stations.length <= 64 && saved.stations.every(stationOK)) stations = saved.stations.map(s => ({ ...s, pending: true }));
+          if (prefetch && dims.includes(saved.controller?.dim) && locationOK(saved.controller)) controller = saved.controller;
+        }
+        initialized = true;
+      } catch (e) { report(e); initialized = true; }
+    });
+    system.runInterval(() => { try { update(); } catch (e) { report(e); } }, 1);
+    return { update, start, stop };
+  }
+  async function configurePrefetchPack(zip, info) {
+    const dir = `behavior_packs/${info.namespace}/`, path = dir + 'manifest.json';
+    const manifest = JSON.parse(await zip.file(path).async('string'));
+    // Retain the cleanup script when turning a previously enabled world off.
+    const needed = !!info.prefetch || manifest.modules.some(m => m.entry === 'scripts/prefetch.js');
+    if (!needed) return;
+    manifest.header.min_engine_version = [1, 21, 90];
+    if (!manifest.modules.some(m => m.entry === 'scripts/prefetch.js')) manifest.modules.push({ type: 'script', language: 'javascript', uuid: uuid(), version: [...manifest.header.version], entry: 'scripts/prefetch.js' });
+    manifest.dependencies = (manifest.dependencies || []).filter(d => d.module_name !== '@minecraft/server');
+    manifest.dependencies.push({ module_name: '@minecraft/server', version: '2.0.0' });
+    zip.file(path, JSON.stringify(manifest, null, 2));
+    const config = { namespace: info.namespace, objective: playbackObjective(info.namespace), columns: info.columns, rows: info.rows,
+      count: info.frameCount ?? info.count, loop: info.loop, controlZ: playbackControlOffset(info), anchor: info.anchor || null, prefetch: info.prefetch || null };
+    zip.file(dir + 'scripts/prefetch.js', 'import { world, system } from "@minecraft/server";\n(' + prefetchRuntime.toString() + ')(' + JSON.stringify(config) + ', world, system);\n');
+  }
+  function validStopLine(line, ns) {
+    return /^fill ~-?\d* ~-?\d* ~-?\d* ~-?\d* ~-?\d* ~-?\d* air$/.test(line) || line === `stopsound @a ${ns}.audio` ||
+      line === `scriptevent ${ns}:prefetch stop` || line === `scoreboard players set mc_active ${playbackObjective(ns)} 0`;
+  }
+  async function prefetchFromWorld(zip, m, checkCancelled, zipLib) {
+    if (!m.prefetch) return;
+    let previous;
+    for (let i = 0; i < m.frameCount; i++) {
+      checkCancelled();
+      const base = `${m.dir}structures/${m.namespace}/`, number = String(i).padStart(6, '0');
+      previous = worldFrameIds(await zip.file(base + 'f' + number + '.mcstructure').async('uint8array'), m.columns, m.rows, previous).ids;
+      const path = base + 'p' + number + '.mcstructure'; zip.file(path, frameStructure(m.columns, m.rows, previous));
+      if (zipLib) await compressEntries(zip, [path], zipLib);
+      if (zip.drain) await zip.drain();
+    }
+  }
+
   function packFiles(zip, options) {
-    const { id, name, count, ticks, loop, origin, rotation, columns = 16, frameTicks, audio, anchor } = options;
+    const { id, name, count, ticks, loop, origin, rotation, columns = 16, rows = 1, frameTicks, audio, anchor, prefetch } = options;
     const namespace = 'mv_' + id, dir = 'behavior_packs/' + namespace + '/';
     const headerId = uuid();
     zip.file(dir + 'manifest.json', JSON.stringify({ format_version: 2,
@@ -834,10 +989,11 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         uuid: headerId, version: [1, 0, 0], min_engine_version: [1, 21, 60] },
       modules: [{ type: 'data', uuid: uuid(), version: [1, 0, 0] }],
     }, null, 2));
-    return { ...playerFiles(zip, { namespace, count, ticks, loop, origin, rotation, columns, frameTicks, audio, anchor }), headerId };
+    return { ...playerFiles(zip, { namespace, count, ticks, loop, origin, rotation, columns, rows, frameTicks, audio, anchor, prefetch }), headerId };
   }
-  function playerFiles(zip, { namespace, count, ticks, loop, origin, rotation, columns = 16, clearSizes = [], frameTicks, audio, anchor }) {
+  function playerFiles(zip, { namespace, count, ticks, loop, origin, rotation, columns = 16, rows = 1, clearSizes = [], frameTicks, audio, anchor, prefetch }) {
     anchor = normalizeAnchor(anchor);
+    prefetch = normalizePrefetch(prefetch);
     const dir = 'behavior_packs/' + namespace + '/';
     const [x, y, z] = origin, controlZ = playbackControlOffset({ columns, rotation, anchor }), control = [x, y, z + controlZ];
     const binding = anchor ? anchorSelectors(namespace, anchor) : null;
@@ -850,7 +1006,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
           [180, 'unless entity @s[rym=-135,ry=135]'],
         ].map(([angle, condition]) => `execute as ${binding.named} at @s align xyz positioned ${binding.offset} ${condition} run structure load ${namespace}:f${String(i).padStart(6, '0')} ~ ~ ~ ${angle}_degrees none`).join('\n')
       : `structure load ${namespace}:f${String(i).padStart(6, '0')} ~${-local[0]} ~${local[1] ? -local[1] : ''} ~${-controlZ-local[2]} ${rotation}_degrees none`;
-    const controller = { ...clockStructure(`function ${namespace}/tick`), offsetZ: controlZ };
+    // Direct block events retain sourceBlock; events emitted inside mcfunctions do not.
+    const controller = { ...clockStructure(prefetch ? `scriptevent ${namespace}:prefetch tick` : `function ${namespace}/tick`), offsetZ: controlZ };
     zip.file(dir + 'structures/' + namespace + '/controller.mcstructure', controller.data);
     const fn = `${dir}functions/${namespace}/`;
     const loadFirst = `structure load ${namespace}:f000000 ~ ~ ~ ${rotation}_degrees none`;
@@ -858,10 +1015,10 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     const clock = clockFiles(zip, fn, namespace, count, ticks, frameTicks, loop,
       (i, local) => audio && i === 0 ? `function ${namespace}/first_frame` : frameCommand(i, local));
     const stop = [...new Set([controller, ...clearSizes].flatMap(size =>
-      controllerClearCommands(size).trim().split('\n')))].join('\n') + '\n' + stopAudio;
+      controllerClearCommands(size).trim().split('\n')))].join('\n') + '\n' + stopAudio + (prefetch ? `scoreboard players set mc_active ${clock.objective} 0\nscriptevent ${namespace}:prefetch stop\n` : '');
     const begin = `scoreboard objectives add ${clock.objective} dummy\n` +
       `scoreboard players set mc_frame ${clock.objective} -1\nscoreboard players set mc_wait ${clock.objective} 20\n` +
-      `scoreboard players set mc_active ${clock.objective} 1\n`;
+      `scoreboard players set mc_active ${clock.objective} 1\n` + (prefetch ? `scoreboard players set mc_prefill ${clock.objective} 1\n` : '');
     if (audio) {
       zip.file(fn + 'first_frame.mcfunction', frameCommand(0, [0, 0, 0]) + '\n' +
         (anchor ? '' : `execute positioned ~ ~ ~${-controlZ} run `) + `function ${namespace}/audio_start\n`);
@@ -898,8 +1055,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     zip.file(fn + 'stop.mcfunction', stop);
     zip.file(fn + 'remove.mcfunction', stop + `tickingarea remove ${tickingName}\ntickingarea remove ${namespace}_screen\n` +
       `tag @e[type=armor_stand,tag=${namespace}_anchor] remove ${namespace}_anchor\n`);
-    zip.file(`MapCinema-${namespace}-player.json`, JSON.stringify({ anchor: anchor || null, controllerLayout: 'clock-v2', controlOffsetZ: controlZ }, null, 2));
-    return { namespace, dir, control, controllerLayout: 'clock-v2', anchor: anchor || null, frameCount: count,
+    zip.file(`MapCinema-${namespace}-player.json`, JSON.stringify({ anchor: anchor || null, prefetch, controllerLayout: 'clock-v2', controlOffsetZ: controlZ }, null, 2));
+    return { namespace, dir, control, controllerLayout: 'clock-v2', anchor: anchor || null, prefetch, columns, rows, loop, frameCount: count,
       totalTicks: frameTiming(count, ticks, frameTicks).totalTicks, ...(frameTicks ? { frameTicks } : {}), ...(audio ? { audio } : {}),
       controllerSize: [controller.width, controller.height, controller.depth] };
   }
@@ -991,7 +1148,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     return audio;
   }
   function finishVideoPackage(zip, info, options, maps) {
-    const metadata = { format: 'mapcinema-video', version: options.anchor ? 5 : options.reuseTiles ? 4 : info.audio ? 3 : options.frameTicks ? 2 : 1,
+    const metadata = { format: 'mapcinema-video', version: options.prefetch ? 6 : options.anchor ? 5 : options.reuseTiles ? 4 : info.audio ? 3 : options.frameTicks ? 2 : 1,
       name: options.name, namespace: info.namespace, headerId: info.headerId,
       columns: options.columns, rows: options.rows, frameCount: options.count,
       ticks: options.ticks, rotation: options.rotation, loop: options.loop,
@@ -1000,8 +1157,9 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     if (options.frameTicks) Object.assign(metadata, { frameTicks: options.frameTicks,
       sourceFrameCount: options.sourceFrameCount, totalTicks: frameTiming(options.count, options.ticks, options.frameTicks).totalTicks });
     if (info.audio) metadata.audio = info.audio;
+    if (options.prefetch) metadata.prefetch = normalizePrefetch(options.prefetch);
     if (options.anchor) metadata.anchor = normalizeAnchor(options.anchor);
-    if (options.reuseTiles || options.anchor) Object.assign(metadata, { mapRefs: 'frames.bin', updateMode: options.anchor ? 'full' : 'changed-tiles',
+    if (options.reuseTiles || options.anchor || options.prefetch) Object.assign(metadata, { mapRefs: 'frames.bin', updateMode: options.anchor ? 'full' : 'changed-tiles',
       tileThreshold: options.reuseTiles ? options.tileThreshold || 0 : 0, mapCount: maps.length, skippedTileWrites: info.skippedTileWrites || 0 });
     zip.file('video.json', JSON.stringify(metadata, null, 2));
     return metadata;
@@ -1010,7 +1168,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     checkCancelled = () => {}, zipLib = root.JSZip, maxRawBytes = LIMITS.MAX_RAW_BYTES }) {
     if (!Number.isInteger(count) || count < 1 || count > LIMITS.MAX_SAMPLES) throw new Error('视频采样数量超出范围。');
     frameTiming(1, o.ticks);
-    o = { ...o, anchor: normalizeAnchor(o.anchor) };
+    o = { ...o, anchor: normalizeAnchor(o.anchor), prefetch: normalizePrefetch(o.prefetch) };
     const tiles = o.columns * o.rows, portable = o.output === 'video', dedupe = o.dedupe === true;
     if (![o.columns, o.rows].every(n => Number.isInteger(n) && n >= 1 && n <= LIMITS.MAX_MAP_EDGE)) throw new Error('屏幕地图数量无效。');
     const capacity = Math.min(maxRawBytes, o.capacityMiB === undefined ? maxRawBytes : o.capacityMiB * 1048576);
@@ -1049,6 +1207,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         }
         const path = `${dir}structures/${namespace}/f${String(frame).padStart(6, '0')}.mcstructure`;
         zip.file(path, frameStructure(o.columns, o.rows, ids)); paths.push(path);
+        if (o.prefetch) { const preload = path.replace(/\/f(\d+\.mcstructure)$/, '/p$1'); zip.file(preload, frameStructure(o.columns, o.rows, ids)); paths.push(preload); }
         if (zipLib) await compressEntries(zip, paths, zipLib);
         if (zip.drain) await zip.drain();
       }
@@ -1057,13 +1216,14 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     }
     checkCancelled();
     const options = { ...o, id, count: durations.length,
-      ...(dedupe || audio || o.anchor ? { frameTicks: durations, sourceFrameCount: count } : {}), audio };
+      ...(dedupe || audio || o.anchor || o.prefetch ? { frameTicks: durations, sourceFrameCount: count } : {}), audio };
     const info = { ...packFiles(zip, options), sourceFrameCount: count, mergedFrames: count - durations.length,
       mapCount: durations.length * tiles, rawBytes: durations.length * tiles * 65536,
       ...(o.anchor ? { updateMode: 'full', skippedTileWrites: 0, tileThreshold: 0 } : {}) };
+    await configurePrefetchPack(zip, { ...options, ...info });
     if (audio) await bindAudio(zip, namespace, audio, { world: !portable });
     if (portable) {
-      if (o.anchor) {
+      if (o.anchor || o.prefetch) {
         const refs = new Uint8Array(maps.length * 4), view = new DataView(refs.buffer);
         maps.forEach((_, i) => view.setUint32(i * 4, i, true)); zip.file('frames.bin', refs);
       }
@@ -1106,6 +1266,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         if (previousIds && !o.anchor && !full) skipped += ids.filter((n, i) => n === previousIds[i]).length;
         const path = `${dir}structures/${namespace}/f${String(durations.length).padStart(6, '0')}.mcstructure`;
         zip.file(path, frameStructure(o.columns, o.rows, ids, o.anchor || full ? undefined : previousIds)); paths.push(path);
+        if (o.prefetch) { const preload = path.replace(/\/f(\d+\.mcstructure)$/, '/p$1'); zip.file(preload, frameStructure(o.columns, o.rows, ids)); paths.push(preload); }
         const ref = new Uint8Array(tiles * 4), view = new DataView(ref.buffer);
         indices.forEach((n, i) => view.setUint32(i * 4, n, true)); refs.push(ref); durations.push(o.ticks);
         previousIds = ids; previousRefs = indices;
@@ -1121,6 +1282,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     const info = { ...packFiles(zip, options), sourceFrameCount: count, mergedFrames: count - durations.length,
       mapCount: pool.count, rawBytes: pool.count * 65536, reusedTiles: pool.reused, suppressedTiles: pool.suppressed,
       skippedTileWrites: skipped, updateMode: o.anchor ? 'full' : 'changed-tiles', tileThreshold: pool.threshold };
+    await configurePrefetchPack(zip, { ...options, ...info });
     if (audio) await bindAudio(zip, namespace, audio, { world: !portable });
     if (portable) { zip.file('frames.bin', concat(refs)); finishVideoPackage(zip, info, options, maps); }
     else { db.finish(); await enablePack(zip, info.headerId); }
@@ -1131,8 +1293,9 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     let m;
     try { m = JSON.parse(await zip.file('video.json').async('string')); }
     catch { throw new Error('视频包信息损坏。'); }
-    if (m.format !== 'mapcinema-video' || ![1, 2, 3, 4, 5].includes(m.version)) throw new Error('暂不支持此视频包版本，请使用更新版方映。');
-    if (m.version === 5) { if (!m.anchor) throw new Error('实体视频包缺少盔甲架锚点。'); m.anchor = normalizeAnchor(m.anchor); }
+    if (m.format !== 'mapcinema-video' || ![1, 2, 3, 4, 5, 6].includes(m.version)) throw new Error('暂不支持此视频包版本，请使用更新版方映。');
+    if (m.version === 6) { if (!m.prefetch) throw new Error('预加载视频包缺少设置。'); m.prefetch = normalizePrefetch(m.prefetch); if (!m.prefetch) throw new Error('预加载设置无效。'); if (m.anchor) m.anchor = normalizeAnchor(m.anchor); }
+    else if (m.version === 5) { if (!m.anchor) throw new Error('实体视频包缺少盔甲架锚点。'); m.anchor = normalizeAnchor(m.anchor); }
     else if (m.anchor !== undefined) throw new Error('此视频包版本不支持实体锚点。');
     if (!/^mv_[a-z0-9_]{1,64}$/.test(m.namespace)) throw new Error('视频包命名空间无效。');
     if (![m.columns, m.rows].every(n => Number.isInteger(n) && n >= 1 && n <= LIMITS.MAX_MAP_EDGE) ||
@@ -1161,7 +1324,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       if (entry._data?.uncompressedSize !== undefined && entry._data.uncompressedSize !== 65536) throw new Error('视频包地图像素长度无效。');
     }
     if (m.version >= 4) {
-      if (m.mapRefs !== 'frames.bin' || m.updateMode !== (m.version === 5 ? 'full' : 'changed-tiles') || ![0, 3, 8].includes(m.tileThreshold) || m.mapCount !== m.maps.length) throw new Error('视频包地图复用信息无效。');
+      if (m.mapRefs !== 'frames.bin' || m.updateMode !== (m.anchor ? 'full' : 'changed-tiles') || ![0, 3, 8].includes(m.tileThreshold) || m.mapCount !== m.maps.length) throw new Error('视频包地图复用信息无效。');
       const entry = zip.file('frames.bin'), size = placements * 4;
       if (!entry || (entry._data?.uncompressedSize !== undefined && entry._data.uncompressedSize !== size)) throw new Error('视频包帧索引长度错误。');
       const bytes = await entry.async('uint8array'); if (bytes.length !== size) throw new Error('视频包帧索引不完整。');
@@ -1222,7 +1385,9 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       updatedTiles += previousIds && !full ? ids.filter((id, i) => id !== previousIds[i]).length : tiles;
       const path = `${m.dir}structures/${m.namespace}/f${String(frame).padStart(6, '0')}.mcstructure`;
       world.file(path, frameStructure(m.columns, m.rows, ids, reuse && !m.anchor && !full ? previousIds : undefined));
-      if (zipLib) await compressEntries(world, [path], zipLib);
+      const paths = [path];
+      if (m.prefetch) { const preload = path.replace(/\/f(\d+\.mcstructure)$/, '/p$1'); world.file(preload, frameStructure(m.columns, m.rows, ids)); paths.push(preload); }
+      if (zipLib) await compressEntries(world, paths, zipLib);
       previousIds = ids;
       elapsedTicks += m.frameTicks ? m.frameTicks[frame] : m.ticks;
       await onProgress((m.maps.length + frame + 1) / total, m.maps.length + frame + 1, total);
@@ -1232,17 +1397,18 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       reusedTiles: m.frameCount * tiles - count, skippedTileWrites: reuse && !m.anchor ? m.frameCount * tiles - updatedTiles : 0,
       updateMode: reuse && !m.anchor ? 'changed-tiles' : 'full', tileThreshold: m.tileThreshold || 0 };
   }
-  async function installVideoPackage(world, video, { onProgress = () => {}, checkCancelled = () => {}, zipLib = root.JSZip, maxRawBytes = LIMITS.MAX_RAW_BYTES, repairController = false, prepareAudio, reuseTiles = false, optimizeExisting = false, anchorOverride } = {}) {
+  async function installVideoPackage(world, video, { onProgress = () => {}, checkCancelled = () => {}, zipLib = root.JSZip, maxRawBytes = LIMITS.MAX_RAW_BYTES, repairController = false, prepareAudio, reuseTiles = false, optimizeExisting = false, anchorOverride, prefetchOverride } = {}) {
     const source = await readVideoPackage(video, { maxRawBytes });
     const m = { ...source };
     if (source.mapIndices) Object.defineProperty(m, 'mapIndices', { value: source.mapIndices });
-    let previousAnchor = source.anchor, previousControlOffset = 6;
+    let previousAnchor = source.anchor, previousPrefetch = source.prefetch, previousControlOffset = 6;
     if (repairController || optimizeExisting) {
       const savedPlayer = world.file(`MapCinema-${m.namespace}-player.json`);
       if (savedPlayer) {
         try {
           const saved = JSON.parse(await savedPlayer.async('string'));
           previousAnchor = normalizeAnchor(saved.anchor);
+          previousPrefetch = normalizePrefetch(saved.prefetch);
           if (saved.controlOffsetZ !== undefined) {
             if (!Number.isInteger(saved.controlOffsetZ) || saved.controlOffsetZ < 6 || saved.controlOffsetZ > 18) throw new Error();
             previousControlOffset = saved.controlOffsetZ;
@@ -1251,6 +1417,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         catch { throw new Error('已有播放器锚点信息损坏。'); }
       }
     }
+    m.prefetch = normalizePrefetch(prefetchOverride === undefined ? previousPrefetch : prefetchOverride);
     m.anchor = normalizeAnchor(anchorOverride === undefined ? previousAnchor : anchorOverride);
     if (repairController && JSON.stringify(m.anchor) !== JSON.stringify(previousAnchor)) throw new Error('切换固定坐标／盔甲架或更改锚点，请选择“优化已安装视频”，以重建完整帧，无需重新抽帧。');
     if (!world.file('level.dat')) throw new Error('目标文件不是基岩版世界。');
@@ -1271,7 +1438,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       if (!oldController || !world.file(`${m.dir}structures/${m.namespace}/f${String(m.frameCount - 1).padStart(6, '0')}.mcstructure`)) throw new Error('世界中的帧结构或命令链不完整，无法修复。');
       const oldSize = { ...controllerDimensions(await oldController.async('uint8array')), offsetZ: previousControlOffset };
       const oldStop = await world.file(`${m.dir}functions/${m.namespace}/stop.mcfunction`)?.async('string');
-      if (typeof oldStop !== 'string' || !oldStop.trim().split('\n').every(line => /^fill ~-?\d* ~-?\d* ~-?\d* ~-?\d* ~-?\d* ~-?\d* air$/.test(line.trim()) || line.trim() === `stopsound @a ${m.namespace}.audio`)) throw new Error('已有停止函数经过修改，无法自动确定清理范围。');
+      if (typeof oldStop !== 'string' || !oldStop.trim().split('\n').every(line => validStopLine(line.trim(), m.namespace))) throw new Error('已有停止函数经过修改，无法自动确定清理范围。');
       const audio = await installAudio(world, video, m, prepareAudio, true); checkCancelled();
       if (audio) manifest.dependencies = JSON.parse(await world.file(m.dir + 'manifest.json').async('string')).dependencies;
       const player = playerFiles(world, { ...m, audio, count: m.frameCount, clearSizes: [oldSize] });
@@ -1287,6 +1454,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       packs.forEach(pack => { if (pack.pack_id === m.headerId) pack.version = [...version]; });
       world.file(m.dir + 'manifest.json', JSON.stringify(manifest, null, 2));
       world.file('world_behavior_packs.json', JSON.stringify(packs, null, 2));
+      await configurePrefetchPack(world, { ...m, ...player });
+      if (!optimizeExisting) await prefetchFromWorld(world, m, checkCancelled, zipLib);
       if (optimizeExisting) {
         const stats = await importFrames(world, video, m, { reuseTiles: true, onProgress, checkCancelled, zipLib });
         world.file(`MapCinema-${m.namespace}-optimization.json`, JSON.stringify({ ...stats, oldMapRecordsPreserved: true,
@@ -1304,12 +1473,13 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     await enablePack(world, m.headerId);
     for (const name of Object.keys(video.files)) {
       checkCancelled();
-      const regeneratedFrame = name.startsWith(`${m.dir}structures/${m.namespace}/f`) && /\/f\d+\.mcstructure$/.test(name);
+      const regeneratedFrame = name.startsWith(`${m.dir}structures/${m.namespace}/`) && /\/[fp]\d+\.mcstructure$/.test(name);
       if (name.startsWith(m.dir) && !video.files[name].dir && !regeneratedFrame) world.file(name, await video.file(name).async('uint8array'));
     }
     // Refresh the controller even for old video packages; pixels need no reconversion.
     const audio = await installAudio(world, video, m, prepareAudio, false); checkCancelled();
     const player = playerFiles(world, { ...m, audio, count: m.frameCount });
+    await configurePrefetchPack(world, { ...m, ...player });
     const stats = await importFrames(world, video, m, { reuseTiles, onProgress, checkCancelled, zipLib });
     world.file(`MapCinema-${m.namespace}.json`, JSON.stringify({ ...m, ...player, ...stats, maps: stats.mapCount,
       installedFrom: '.mcvideo', mapIdsReassigned: true }, null, 2));
@@ -1366,7 +1536,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     if (ids.includes(null) || Object.keys(entities).some(k => !used.has(k))) fail('首帧缺少地图，或帧中含额外实体。');
     return { ids, full: indices.every((n, i) => n === i % 2), writes: used.size };
   }
-  async function upgradeInstalledWorld(world, { checkCancelled = () => {}, onProgress = async () => {} } = {}) {
+  async function upgradeInstalledWorld(world, { checkCancelled = () => {}, onProgress = async () => {}, prefetchOverride, zipLib = root.JSZip } = {}) {
     // ponytail: one player per world; ambiguous multiple-player metadata fails closed.
     const ensure = (ok, message) => { if (!ok) throw new Error(message); };
     ensure(world.file('level.dat'), '请选择完整基岩版 .mcworld 世界。');
@@ -1386,6 +1556,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     const dir = `behavior_packs/${ns}/`, structures = `${dir}structures/${ns}/`, fn = `${dir}functions/${ns}/`;
     const saved = world.file(`MapCinema-${ns}-player.json`) ? JSON.parse(await world.file(`MapCinema-${ns}-player.json`).async('string')) : {};
     const anchor = normalizeAnchor(Object.hasOwn(saved, 'anchor') ? saved.anchor : m.anchor);
+    const prefetch = normalizePrefetch(prefetchOverride === undefined ? (Object.hasOwn(saved, 'prefetch') ? saved.prefetch : m.prefetch) : prefetchOverride);
     const offsetZ = saved.controlOffsetZ ?? 6;
     ensure(Number.isInteger(offsetZ) && offsetZ >= 6 && offsetZ <= 18, '旧控制区坐标无效。');
     const frameNames = names.filter(n => n.startsWith(structures) && /\/f\d+\.mcstructure$/.test(n));
@@ -1416,7 +1587,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     ensure([columns, rows].every(n => Number.isInteger(n) && n >= 1 && n <= LIMITS.MAX_MAP_EDGE) && depth === 2, '旧屏幕尺寸无效。');
     const stop = await world.file(fn + 'stop.mcfunction')?.async('string');
     const stopLines = stop?.trim().split(/\r?\n/).map(line => line.trim());
-    ensure(stopLines?.length && stopLines.every(line => /^fill ~-?\d* ~-?\d* ~-?\d* ~-?\d* ~-?\d* ~-?\d* air$/.test(line) || line === `stopsound @a ${ns}.audio`), '停止函数已被修改，无法自动确定旧控制区。');
+    ensure(stopLines?.length && stopLines.every(line => validStopLine(line, ns)), '停止函数已被修改，无法自动确定旧控制区。');
     const manifest = JSON.parse(await world.file(dir + 'manifest.json').async('string')), packs = JSON.parse(await world.file('world_behavior_packs.json').async('string'));
     ensure(Array.isArray(packs) && packs.some(p => p.pack_id === manifest.header?.uuid && String(p.version) === String(manifest.header.version)) && manifest.modules?.some(mod => mod.type === 'data'), '世界的播放器行为包未启用或版本不一致。');
     const version = manifest.header.version;
@@ -1443,17 +1614,19 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     ensure(level.length >= 8 && levelView.getUint32(4, true) === level.length - 8, 'level.dat 长度校验失败。');
     const { value: oldLevel, levelNameSpan } = readWorldNbt(level.subarray(8));
     ensure(levelNameSpan && typeof oldLevel.LevelName === 'string', '无法读取原世界名称。');
-    const suffix = '（播放修复 v16.1）', worldName = oldLevel.LevelName.replace(/（播放修复 v\d+(?:\.\d+)?）$/, '') + suffix;
+    const suffix = '（播放修复 v17）', worldName = oldLevel.LevelName.replace(/（播放修复 v\d+(?:\.\d+)?）$/, '') + suffix;
     const nameBytes = bytes(worldName); ensure(nameBytes.length <= 65535, '世界名称过长。');
     const body = concat([level.subarray(8, 8 + levelNameSpan[0]), u16(nameBytes.length), nameBytes, level.subarray(8 + levelNameSpan[1])]);
     const player = playerFiles(world, { namespace: ns, count, ticks, loop, origin: m.origin, rotation, columns,
-      frameTicks: timing.durations, audio, anchor, clearSizes: [oldSize] });
+      rows, frameTicks: timing.durations, audio, anchor, prefetch, clearSizes: [oldSize] });
     for (const action of ['play', 'stop', 'remove']) {
       const name = fn + action + '.mcfunction'; world.file(name, stopLines.join('\n') + '\n' + await world.file(name).async('string'));
     }
     version[2]++; manifest.modules.forEach(mod => { mod.version = [...version]; });
     packs.forEach(pack => { if (pack.pack_id === manifest.header.uuid) pack.version = [...version]; });
     world.file(dir + 'manifest.json', JSON.stringify(manifest, null, 2)); world.file('world_behavior_packs.json', JSON.stringify(packs, null, 2));
+    await configurePrefetchPack(world, { ...m, ...player, rotation });
+    await prefetchFromWorld(world, { ...m, ...player, dir }, checkCancelled, zipLib);
     world.file('level.dat', concat([level.subarray(0, 4), u32(body.length), body])); world.file('levelname.txt', worldName);
     const info = { ...m, ...player, name: worldName, columns, rows, rotation, loop, ticks, totalTicks: timing.totalTicks,
       frameCount: count, mapCount: uniqueIds.size, updatedController: true, worldOnlyUpgrade: true,
@@ -1472,7 +1645,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     controllerLayout, controllerPosition, controllerNodes, controllerClearCommands, controllerDimensions, playbackLayout, playbackControlOffset, playerFiles, frameTiming, sameFrame, writeVideoFrames,
     crc32c, Journal, records, manifestInfo, databaseWriter, levelDat, packFiles,
     enablePack, finishVideoPackage, readVideoPackage, installVideoPackage, upgradeInstalledWorld, compressEntries,
-    audioFiles, readAudio, bindAudio, normalizeAnchor, anchorSelectors, TileReuse, tileDigest, sha256Fallback, tileWithinThreshold };
+    audioFiles, readAudio, bindAudio, normalizePrefetch, prefetchRuntime, normalizeAnchor, anchorSelectors, TileReuse, tileDigest, sha256Fallback, tileWithinThreshold };
   if (typeof module !== 'undefined') module.exports = root.MapCinemaCore;
 })(globalThis);
 </script><script>/* Incremental ZIP/ZIP64 I/O for desktop File System Access; no full-file buffering. */
@@ -1771,10 +1944,10 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     const result = await archive.close(async fraction => { checkCancelled(); await onProgress(92 + fraction * 7, '正在复制原世界文件…', `${(fraction * 100).toFixed(0)}%`); });
     return { info, saved: { ...destination, ...result } };
   }
-  async function merge({ packageFile, worldFile, destination, onProgress, checkCancelled, repairController = false, prepareAudio, reuseTiles = false, optimizeExisting = false, anchorOverride, worldOnlyUpgrade = false }) {
+  async function merge({ packageFile, worldFile, destination, onProgress, checkCancelled, repairController = false, prepareAudio, reuseTiles = false, optimizeExisting = false, anchorOverride, prefetchOverride, worldOnlyUpgrade = false }) {
     const video = worldOnlyUpgrade ? null : new D.Archive(await D.ZipReader.open(packageFile), null);
     const archive = new D.Archive(await D.openWorld(worldFile), destination.writer);
-    const options = { checkCancelled, zipLib: null, maxRawBytes: D.MAX_RAW_BYTES, repairController, prepareAudio, reuseTiles, optimizeExisting, anchorOverride,
+    const options = { checkCancelled, zipLib: null, maxRawBytes: D.MAX_RAW_BYTES, repairController, prepareAudio, reuseTiles, optimizeExisting, anchorOverride, prefetchOverride,
       onProgress: async (fraction, done, total) => {
         await archive.drain();
         await onProgress(5 + fraction * 85, worldOnlyUpgrade ? '正在检查旧世界并升级播放器…' : optimizeExisting ? '正在优化已有视频的地图引用…' : repairController ? '已更新播放器，正在保存世界副本…' : '正在将视频加入世界副本…', worldOnlyUpgrade ? `${done} / ${total} 帧 · 保留原地图数据与音轨，无需视频包。` : repairController && !optimizeExisting ? '原有地图像素和帧结构保持原样，无需重写地图。' : `${done} / ${total} 项地图/帧结构 · 已写磁盘 ${(destination.writer.position / 1024 ** 3).toFixed(2)} GiB`);
@@ -1881,6 +2054,9 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     return $(prefix + 'anchor-mode').value === 'armor_stand' ? { mode: 'armor_stand',
       name: $(prefix + 'anchor-name').value.trim(), offset: ['x', 'y', 'z'].map(axis => +$(prefix + 'anchor-' + axis).value) } : null;
   }
+  function readPrefetch(prefix = '') {
+    return { enabled: true, frames: +$(prefix + 'prefetch-frames').value, height: +$(prefix + 'prefetch-height').value };
+  }
   function config() {
     return { columns: +$('columns').value, rows: +$('rows').value, ticks: +$('ticks').value,
       start: +$('start').value, duration: +$('duration').value, rotation: +$('facing').value,
@@ -1889,7 +2065,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       output: $('output-type').value, capacityMiB: +$('capacity').value,
       storage: $('storage-mode').value, dedupe: $('dedupe').checked,
       audioMode: $('audio-mode').value, audioStart: +$('audio-start').value, audioBudgetMiB: +$('audio-budget').value,
-      reuseTiles: $('reuse-tiles').checked, tileThreshold: +$('tile-threshold').value, anchor: readAnchor() };
+      reuseTiles: $('reuse-tiles').checked, tileThreshold: +$('tile-threshold').value, anchor: readAnchor(), prefetch: $('prefetch-enabled').checked ? readPrefetch() : null };
   }
   function infoSummary(info) {
     return `采样 ${info.sourceFrameCount} 帧，保存 ${info.frameCount} 帧（合并 ${info.mergedFrames} 帧），写入 ${info.mapCount} 张独立地图，时长 ${(info.totalTicks / 20).toFixed(2)} 秒`;
@@ -1904,6 +2080,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     const o = config(), calc = calculation(o);
     const disk = o.storage === 'disk' || o.output === 'folder';
     $('tile-threshold').disabled = !o.reuseTiles;
+    $('prefetch-options').hidden = !o.prefetch;
+    for (const id of ['prefetch-frames', 'prefetch-height']) $(id).disabled = !o.prefetch;
     $('anchor-options').hidden = !o.anchor;
     $('facing').disabled = !!o.anchor;
     $('reuse-label').textContent = o.anchor ? '复用相同地图（实体模式加载完整帧）' : '复用地图，周期完整刷新';
@@ -2036,7 +2214,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     if (!portable) {
       const height = info.controllerSize?.[1] ?? C.playbackLayout(info.frameCount).height;
       $('result-description').textContent += ` 播放时钟只占一个命令方块；底部 Y 不得高于 ${320 - height}。`;
-      if (info.worldOnlyUpgrade) $('result-description').textContent += ` 仅凭旧世界完成升级，保留原地图 ID、时序与音轨，并重建 ${info.fullFrameCount} 个周期完整帧；进入名称带“播放修复 v16.1”的副本，在原坐标重新播放。`;
+      if (info.prefetch) $('result-description').textContent += ` 已开启区块上空提前加载：${info.prefetch.frames} 帧，上方 ${info.prefetch.height} 格，范围 16×16；额外墙需空中空气区，客户端预渲染效果需要进游戏验证。`;
+      if (info.worldOnlyUpgrade) $('result-description').textContent += ` 仅凭旧世界完成升级，保留原地图 ID、时序与音轨，并重建 ${info.fullFrameCount} 个周期完整帧；进入名称带“播放修复 v17”的副本，在原坐标重新播放。`;
       else if (info.updatedController && !info.optimizedMaps) $('result-description').textContent += ' 已保留地图与帧结构；在原播放坐标重新运行播放命令安装新控制组。';
     }
     if (info.sourceFrameCount > info.frameCount) $('result-description').textContent += ` 已把 ${info.sourceFrameCount} 个采样帧合并为 ${info.frameCount} 个播放帧，按原节奏停留与循环。`;
@@ -2075,7 +2254,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     $('error').hidden = true;
     if (!selectedVideo || video.readyState < 2) { error('请先选择并加载一个视频。'); return; }
     const o = config(), calc = calculation(o);
-    try { o.anchor = C.normalizeAnchor(o.anchor); } catch (e) { error(e.message); return; }
+    try { o.anchor = C.normalizeAnchor(o.anchor); o.prefetch = C.normalizePrefetch(o.prefetch); } catch (e) { error(e.message); return; }
     if (!Number.isInteger(o.columns) || !Number.isInteger(o.rows) || o.columns < 1 || o.columns > C.LIMITS.MAX_MAP_EDGE || o.rows < 1 || o.rows > C.LIMITS.MAX_MAP_EDGE) { error(`屏幕横向和纵向须为 1–${C.LIMITS.MAX_MAP_EDGE} 张地图。`); return; }
     if (!o.origin.every(Number.isInteger) || o.origin[1] < -64 || o.origin[1] + (o.anchor ? 1 : o.rows) > 320) { error('坐标须为整数，且屏幕必须位于世界建筑高度范围内。'); return; }
     if (calc.count < 1 || o.start < 0 || o.start >= video.duration) { error('截取开始时间必须在视频时长内。'); return; }
@@ -2178,7 +2357,9 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     const repairController = $('merge-action').value === 'repair';
     const optimizeExisting = $('merge-action').value === 'optimize';
     const reuseTiles = $('merge-reuse').checked;
-    let anchorOverride;
+    let anchorOverride, prefetchOverride;
+    try { if ($('merge-prefetch-mode').value !== 'keep') prefetchOverride = $('merge-prefetch-mode').value === 'on' ? C.normalizePrefetch(readPrefetch('merge-')) : null; }
+    catch (e) { error(e.message); return; }
     try { if (!worldOnlyUpgrade && $('merge-anchor-mode').value !== 'package') anchorOverride = C.normalizeAnchor(readAnchor('merge-')) || null; }
     catch (e) { error(e.message); return; }
     const audioFile = worldOnlyUpgrade ? null : $('merge-audio-file').files[0], audioStart = +$('merge-audio-start').value;
@@ -2196,15 +2377,15 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     let destination;
     try {
       if (disk) {
-        destination = await MapCinemaLarge.pickDestination({ output: $('merge-output').value }, worldFile.name.replace(/\.(mcworld|zip)$/i, '') + (worldOnlyUpgrade ? '-播放修复-v16.1' : '-含视频'), checkCancel);
-        const result = await MapCinemaLarge.merge({ packageFile, worldFile, destination, checkCancelled: checkCancel, repairController, prepareAudio, reuseTiles, optimizeExisting, anchorOverride, worldOnlyUpgrade,
+        destination = await MapCinemaLarge.pickDestination({ output: $('merge-output').value }, worldFile.name.replace(/\.(mcworld|zip)$/i, '') + (worldOnlyUpgrade ? '-播放修复-v17' : '-含视频'), checkCancel);
+        const result = await MapCinemaLarge.merge({ packageFile, worldFile, destination, checkCancelled: checkCancel, repairController, prepareAudio, reuseTiles, optimizeExisting, anchorOverride, prefetchOverride, worldOnlyUpgrade,
           onProgress: async (...args) => { progress(...args); await pause(); } });
         showResult(null, { name: result.info.name, origin: result.info.origin, output: 'world' }, result.info, result.saved);
-        progress(100, '世界副本已写入磁盘', worldOnlyUpgrade ? '旧世界已升级，无需视频包。导入名称带“播放修复 v16.1”的副本，在原坐标播放。' : optimizeExisting ? `已优化为 ${result.info.mapCount} 张独立地图；旧记录保留。导入后在原坐标播放。` : repairController ? '播放器布局已更新，原有地图与帧结构已保留。导入副本后在原坐标执行播放命令。' : `${result.info.frameCount} 帧已加入；原世界文件保持原样。`); return;
+        progress(100, '世界副本已写入磁盘', worldOnlyUpgrade ? '旧世界已升级，无需视频包。导入名称带“播放修复 v17”的副本，在原坐标播放。' : optimizeExisting ? `已优化为 ${result.info.mapCount} 张独立地图；旧记录保留。导入后在原坐标播放。` : repairController ? '播放器布局已更新，原有地图与帧结构已保留。导入副本后在原坐标执行播放命令。' : `${result.info.frameCount} 帧已加入；原世界文件保持原样。`); return;
       }
       progress(0, worldOnlyUpgrade ? '正在读取旧世界…' : '正在读取视频包和已有世界…', '无需重新抽帧，所有文件均在本机处理。'); await pause();
       const videoZip = worldOnlyUpgrade ? null : await JSZip.loadAsync(packageFile), world = await openWorld(worldFile); checkCancel();
-      const upgradeOptions = { checkCancelled: checkCancel, repairController, prepareAudio, reuseTiles, optimizeExisting, anchorOverride,
+      const upgradeOptions = { checkCancelled: checkCancel, repairController, prepareAudio, reuseTiles, optimizeExisting, anchorOverride, prefetchOverride,
         onProgress: async (fraction, count, total) => {
           progress(5 + fraction * 70, worldOnlyUpgrade ? '正在检查并升级旧世界…' : optimizeExisting ? '正在优化已有视频…' : repairController ? '播放器布局已更新' : '正在加入地图和播放器…', worldOnlyUpgrade ? `${count} / ${total} 帧 · 保留地图数据与音轨。` : repairController ? '保留原有地图像素与帧结构，无需重新抽帧。' : `${count} / ${total} 项地图/帧结构`); await pause();
         } };
@@ -2214,8 +2395,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         checkCancel(); progress(75 + m.percent * 0.25, '正在打包世界副本…', `${m.percent.toFixed(0)}% · 请保持页面在前台`);
       });
       checkCancel();
-      showResult(blob, { name: worldOnlyUpgrade ? worldFile.name.replace(/\.(mcworld|zip)$/i, '') + '-播放修复-v16.1' : `${worldFile.name.replace(/\.(mcworld|zip)$/i, '')}-含${info.name}`, origin: info.origin, output: 'world' }, info);
-      progress(100, worldOnlyUpgrade ? '旧世界升级完成' : optimizeExisting ? '地图优化完成' : repairController ? '播放器更新完成' : '合并完成', worldOnlyUpgrade ? '导入名称带“播放修复 v16.1”的世界副本，在原坐标执行播放命令。原世界未修改。' : optimizeExisting ? `已优化为 ${info.mapCount} 张独立地图；旧记录保留。导入世界副本，在原坐标重新播放。` : repairController ? '地图与帧已保留。导入世界副本，在原坐标执行播放命令即可安装更新后的播放器。' : `${info.frameCount} 帧已加入世界副本。导入游戏后会出现一个新世界，名称可能与原世界相同。`);
+      showResult(blob, { name: worldOnlyUpgrade ? worldFile.name.replace(/\.(mcworld|zip)$/i, '') + '-播放修复-v17' : `${worldFile.name.replace(/\.(mcworld|zip)$/i, '')}-含${info.name}`, origin: info.origin, output: 'world' }, info);
+      progress(100, worldOnlyUpgrade ? '旧世界升级完成' : optimizeExisting ? '地图优化完成' : repairController ? '播放器更新完成' : '合并完成', worldOnlyUpgrade ? '导入名称带“播放修复 v17”的世界副本，在原坐标执行播放命令。原世界未修改。' : optimizeExisting ? `已优化为 ${info.mapCount} 张独立地图；旧记录保留。导入世界副本，在原坐标重新播放。` : repairController ? '地图与帧已保留。导入世界副本，在原坐标执行播放命令即可安装更新后的播放器。' : `${info.frameCount} 帧已加入世界副本。导入游戏后会出现一个新世界，名称可能与原世界相同。`);
     } catch (e) {
       if (destination) await destination.writer.abort();
       error(e.name === 'AbortError' ? '已取消保存位置选择。' : ['SecurityError', 'NotAllowedError'].includes(e.name) ? '浏览器未允许磁盘访问。请用电脑 Chrome／Edge；若本地 HTML 被限制，请解压电脑版并运行本地启动器。' : e.message || String(e));
@@ -2227,6 +2408,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     }
   });
   function syncMergeMode() {
+    syncPrefetch();
     const onlyWorld = $('merge-action').value === 'world';
     $('import-video').required = !onlyWorld;
     for (const id of ['import-video', 'merge-reuse', 'merge-anchor-mode', 'merge-anchor-name', 'merge-anchor-x', 'merge-anchor-y', 'merge-anchor-z', 'merge-audio-file', 'merge-audio-start']) $(id).disabled = onlyWorld;
@@ -2234,6 +2416,13 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     $('merge-action-hint').textContent = onlyWorld ? '只选择右侧旧世界 .mcworld，即可升级播放时钟并补入周期完整帧；保留地图、时序和音轨，不需要原视频或视频包。暂支持世界内只有一个完整方映播放器；固定坐标和命名盔甲架均可。请先停止播放并退出世界，再导出副本。' : '加入／修复／优化需要对应的原 .mcvideo 和世界副本；没有视频包时，请改选“仅用旧世界升级（无需视频包）”。';
     $('merge-button').textContent = onlyWorld ? '生成升级副本 ↗' : '生成世界副本 ↗';
   }
+  function syncPrefetch() {
+    const on = $('merge-prefetch-mode').value === 'on';
+    $('merge-prefetch-options').hidden = !on;
+    for (const id of ['merge-prefetch-frames', 'merge-prefetch-height']) $(id).disabled = !on;
+    for (const id of ['prefetch-frames', 'prefetch-height']) $(id).disabled = !$('prefetch-enabled').checked;
+  }
+  $('merge-prefetch-mode').addEventListener('change', syncPrefetch);
   $('merge-action').addEventListener('change', syncMergeMode); syncMergeMode();
   $('merge-anchor-mode').addEventListener('change', () => { $('merge-anchor-options').hidden = $('merge-anchor-mode').value !== 'armor_stand'; });
   if (MapCinemaLarge.available()) { $('storage-mode').value = 'disk'; $('capacity').value = '32768'; }

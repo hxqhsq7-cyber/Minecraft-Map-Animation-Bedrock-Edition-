@@ -40,7 +40,7 @@ async function main() {
   assert.equal(Object.keys(frame40.structure.palette.default.block_position_data).length, 8);
   const oldLevel = nbt(await old.file('level.dat').async('uint8array').then(b => b.subarray(8)));
   const newLevel = nbt(await zip.file('level.dat').async('uint8array').then(b => b.subarray(8)));
-  assert.equal(newLevel.LevelName, oldLevel.LevelName + '（播放修复 v16.1）');
+  assert.equal(newLevel.LevelName, oldLevel.LevelName + '（播放修复 v17）');
   assert.deepEqual({ ...newLevel, LevelName: oldLevel.LevelName }, oldLevel);
   const again = await C.upgradeInstalledWorld(zip);
   assert.equal(again.name, newLevel.LevelName, 'Repeated upgrade duplicated the world-name suffix');
