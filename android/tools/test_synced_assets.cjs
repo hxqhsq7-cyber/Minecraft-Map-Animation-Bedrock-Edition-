@@ -7,13 +7,15 @@ const scripts = [...html.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/g)].map(m=>
 const assets = path.join(root,'app/src/main/assets');
 const names = ['jszip.min.js','audio.js','core.js','disk.js','large.js','commands.js'];
 names.forEach((name,i)=>assert.equal(fs.readFileSync(path.join(assets,name),'utf8'),scripts[i],name));
+for(const name of ['reverse.js','media-bundle.js']) assert.deepEqual(fs.readFileSync(path.join(assets,name)),fs.readFileSync(path.join(repo,'app',name)));
 const index = fs.readFileSync(path.join(assets,'index.html'),'utf8');
 assert.ok(index.indexOf('src="android.js"')<index.indexOf('src="jszip.min.js"'));
 assert.ok(index.includes('value="world">仅用旧世界升级（无需视频包）'));
 assert.ok(index.includes('所有同名盔甲架同步播放'));
 assert.ok(index.includes('id="prefetch-enabled"') && index.includes('id="merge-prefetch-mode"') && index.includes('16×16'));
+assert.ok(index.includes('id="reverse-panel"') && index.includes('src="reverse.js"') && index.includes('src="media-bundle.js"'));
 const bridge = fs.readFileSync(path.join(assets,'android.js'),'utf8');
-assert.ok(bridge.includes('安卓离线应用 · v17'));
+assert.ok(bridge.includes('安卓离线应用 · v18'));
 const {webcrypto} = require('node:crypto');
 const context = vm.createContext({ Uint8Array,Uint16Array,Uint32Array,Int32Array,ArrayBuffer,DataView,
   TextEncoder,TextDecoder,Blob,crypto:webcrypto,setTimeout,clearTimeout,setImmediate,console });

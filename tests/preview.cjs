@@ -7,7 +7,7 @@ const root = path.resolve(__dirname, '..');
 const profile = path.join(root, 'tests/runs/preview-' + Date.now());
 const env = { ...process.env, MAPCINEMA_DATA_DIR: profile }; delete env.ELECTRON_RUN_AS_NODE;
 const log = fs.openSync(path.join(root, 'logs/preview-exe.log'), 'w');
-const child = spawn(path.join(root, 'release/方映-电脑版-v17/方映.exe'),
+const child = spawn(path.join(root, 'release/方映-电脑版-v18/方映.exe'),
   ['--remote-debugging-port=0', '--remote-debugging-address=127.0.0.1'],
   { env, windowsHide: true, stdio: ['ignore', log, log] });
 const sleep = ms => new Promise(r => setTimeout(r, ms));
@@ -47,7 +47,7 @@ async function main() {
       packageRequired: document.getElementById('import-video').required, scrollY };
   })()`, returnByValue: true });
   assert.ok(!selected.exceptionDetails, JSON.stringify(selected.exceptionDetails));
-  assert.ok(selected.result.value.badge.includes('v17'));
+  assert.ok(selected.result.value.badge.includes('v18'));
   assert.ok(selected.result.value.scrollY > 100);
   assert.equal(selected.result.value.packageRequired, false);
   await sleep(500);
@@ -69,11 +69,23 @@ async function main() {
   assert.ok(small.result.value.scrollWidth <= small.result.value.width, 'Mobile preload UI overflow');
   const narrowShot = await call('Page.captureScreenshot', { format: 'png', fromSurface: true });
   fs.writeFileSync(path.join(root, 'logs/区块上空提前加载设置-窄屏.png'), Buffer.from(narrowShot.data, 'base64'));
+  await call('Emulation.clearDeviceMetricsOverride');
+  await call('Runtime.evaluate', { expression: `document.getElementById('reverse-panel').scrollIntoView({block:'start'});` });
+  await sleep(200);
+  const reverseShot = await call('Page.captureScreenshot', { format: 'png', fromSurface: true });
+  fs.writeFileSync(path.join(root, 'logs/地图动画导出MP4-电脑版.png'), Buffer.from(reverseShot.data, 'base64'));
+  await call('Emulation.setDeviceMetricsOverride', { width: 390, height: 844, deviceScaleFactor: 1, mobile: true });
+  await call('Runtime.evaluate', { expression: `document.getElementById('reverse-panel').scrollIntoView({block:'start'});` });
+  await sleep(200);
+  const reverseSize = await call('Runtime.evaluate', { expression: 'document.documentElement.scrollWidth <= innerWidth', returnByValue: true });
+  assert.equal(reverseSize.result.value, true, 'Reverse export UI overflows narrow screen');
+  const reverseNarrowShot = await call('Page.captureScreenshot', { format: 'png', fromSurface: true });
+  fs.writeFileSync(path.join(root, 'logs/地图动画导出MP4-窄屏.png'), Buffer.from(reverseNarrowShot.data, 'base64'));
   const exited = new Promise((resolve, reject) => {
     const timer = setTimeout(() => { child.kill(); reject(new Error('Preview shutdown timeout')); }, 10000);
     child.once('exit', code => { clearTimeout(timer); code === 0 ? resolve() : reject(new Error('Preview exit ' + code)); });
   });
   socket.send(JSON.stringify({ id: ++sequence, method: 'Browser.close' })); await exited;
-  console.log('PASS: actual v17 EXE shows world-only upgrade and preload controls at desktop and 390px widths.');
+  console.log('PASS: actual v18 EXE shows world-only upgrade and preload controls at desktop and 390px widths.');
 }
 main().then(() => socket?.close()).catch(error => { child.kill(); socket?.close(); console.error(error); process.exitCode = 1; });

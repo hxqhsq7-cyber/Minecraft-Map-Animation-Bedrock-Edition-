@@ -10,7 +10,7 @@ fs.mkdirSync(output, { recursive: true });
 const profile = path.join(__dirname, 'runs', run);
 const env = { ...process.env, MAPCINEMA_DATA_DIR: profile };
 delete env.ELECTRON_RUN_AS_NODE;
-const exe = path.join(root, 'release', '方映-电脑版-v17', '方映.exe');
+const exe = path.join(root, 'release', '方映-电脑版-v18', '方映.exe');
 const log = fs.openSync(path.join(root, 'logs', 'exe-smoke.log'), 'w');
 const child = spawn(exe, ['--smoke-test', '--remote-debugging-port=0', '--remote-debugging-address=127.0.0.1'],
   { env, windowsHide: true, stdio: ['ignore', log, log] });
@@ -48,8 +48,12 @@ async function main() {
   };
   await call('Runtime.enable'); await call('Page.enable');
   await call('Browser.setDownloadBehavior', { behavior: 'allow', downloadPath: output, eventsEnabled: true });
-  const initial = await call('Runtime.evaluate', { expression: 'document.readyState', returnByValue: true });
-  assert.equal(initial.result.value, 'complete');
+  let ready = false;
+  while (!ready && Date.now() < deadline) {
+    ready = (await call('Runtime.evaluate', { expression: 'document.readyState === "complete" && typeof MapCinemaReverse === "object"', returnByValue: true })).result.value;
+    if (!ready) await sleep(50);
+  }
+  assert.ok(ready, 'Application scripts did not finish loading');
   let screenshotCaptured = false;
   try {
     const screenshot = await call('Page.captureScreenshot', { format: 'png', fromSurface: false }, 5000);

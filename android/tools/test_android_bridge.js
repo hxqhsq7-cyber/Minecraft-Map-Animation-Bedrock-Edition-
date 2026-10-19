@@ -46,5 +46,9 @@ function fixture(){
   await assert.rejects(broken.close(),/未保存完整结果/);assert.equal(files.get('file3').abort,true);
   setFail(false);setCancel(true);
   await assert.rejects(ctx.showSaveFilePicker({}),e=>e.name==='AbortError');
+  setCancel(false);
+  const mp4=await ctx.showSaveFilePicker({suggestedName:'导出.mp4',types:[{accept:{'video/mp4':['.mp4']}}]});
+  const mp4Writer=await mp4.createWritable();await mp4Writer.write(Uint8Array.from([0,0,0,8,102,116,121,112]));await mp4Writer.close();
+  assert.equal(files.get('file4').mime,'video/mp4');assert.equal(files.get('file4').abort,false);
   console.log('PASS: chunk size, byte order, queued writes, Blob writes, close, abort, write failure, picker cancellation.');
 })().catch(e=>{console.error(e);process.exitCode=1;});

@@ -60,9 +60,11 @@
     }catch(error){try{await writer.abort();}catch(_){}throw error;}
   }
   function showExports(){
-    const result=document.getElementById('result');if(!result||!outputs.length)return;
+    const reverse=document.getElementById('reverse-result');
+    const result=reverse&&!reverse.hidden?reverse:document.getElementById('result');if(!result||!outputs.length)return;
     let area=document.getElementById('android-exports');
     if(!area){area=document.createElement('div');area.id='android-exports';result.append(area);}
+    else if(area.parentElement!==result)result.append(area);
     area.replaceChildren();
     const heading=document.createElement('p');heading.className='hint';heading.textContent='文件已通过安卓系统保存。可选择应用打开／导入，或分享文件。';area.append(heading);
     for(const item of outputs.slice(-3)){
@@ -96,11 +98,11 @@
     const storage=document.getElementById('storage-mode');if(storage)storage.value='disk';
     const capacity=document.getElementById('capacity');if(capacity)capacity.value='4096';
     if(storage)storage.dispatchEvent(new Event('input',{bubbles:true}));
-    const badge=document.querySelector('.badge');if(badge)badge.textContent='安卓离线应用 · v17';
+    const badge=document.querySelector('.badge');if(badge)badge.textContent='安卓离线应用 · v18';
     const footer=document.querySelector('footer a');if(footer){const label=document.createElement('span');label.textContent='全部资源已内置 · 无需联网';footer.replaceWith(label);}
     const busy=()=>{const a=document.getElementById('convert'),b=document.getElementById('merge-button');native.setBusy(!!(a&&b&&a.disabled&&b.disabled));};
     for(const id of ['convert','merge-button']){const button=document.getElementById(id);if(button)new MutationObserver(busy).observe(button,{attributes:true,attributeFilter:['disabled']});}
-    const result=document.getElementById('result');if(result)new MutationObserver(showExports).observe(result,{attributes:true,attributeFilter:['hidden']});
+    for(const id of ['result','reverse-result']){const result=document.getElementById(id);if(result)new MutationObserver(showExports).observe(result,{attributes:true,attributeFilter:['hidden']});}
     busy();
   });
   root.MapCinemaAndroid={onResult,request,choose,saveDownload,outputs};

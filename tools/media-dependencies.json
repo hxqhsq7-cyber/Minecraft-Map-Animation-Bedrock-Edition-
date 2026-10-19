@@ -1,0 +1,21 @@
+{
+  "bundle_sha256": "ef93fa6566b47c6f5d5d3f234ee0e222e2d044fcbea7639e4f38ed79218986e8",
+  "components": [
+    {
+      "package": "mediabunny",
+      "version": "1.61.6",
+      "url": "https://registry.npmjs.org/mediabunny/-/mediabunny-1.61.6.tgz",
+      "integrity": "sha512-VHEZ53/7jGl4dQ+uOdndsZufFYwEUFWv9UXgvrGun3OapyzoqI9iaPOD7z3xxY/nAttLZBNwswgJzMtGJAquOQ==",
+      "file": "dist/bundles/mediabunny.min.cjs",
+      "sha256": "be6b7b7953e6fb90dc86a720b5b2a70cd3dc5a3f06d3a948ee5825ac0bf9344e"
+    },
+    {
+      "package": "@mediabunny/aac-encoder",
+      "version": "1.61.6",
+      "url": "https://registry.npmjs.org/@mediabunny/aac-encoder/-/aac-encoder-1.61.6.tgz",
+      "integrity": "sha512-rdeYDcjzi1VSpGcVlq9zBBCqrqualmh7cJjckl7lrKGpCrSIOTCdivdEHTFSCgHoH5G/aMxiCOb9M4fyAmzn6w==",
+      "file": "dist/bundles/mediabunny-aac-encoder.min.js",
+      "sha256": "0f8cba8e4c803cf14cc2ac7b2978a6b5d56ae7ba7f7f9770bfc09a7f3d1ff2bb"
+    }
+  ]
+}

@@ -2,6 +2,8 @@
 from pathlib import Path
 import re
 import shutil
+import hashlib
+import json
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT.parent / 'app/MapCinema.html'
@@ -10,8 +12,11 @@ SCRIPTS = ['jszip.min.js', 'audio.js', 'core.js', 'disk.js', 'large.js', 'comman
 
 
 def sync():
+    media = json.loads((ROOT.parent / 'tools/media-dependencies.json').read_bytes())
+    if hashlib.sha256((ROOT.parent / 'app/media-bundle.js').read_bytes()).hexdigest() != media['bundle_sha256']:
+        raise RuntimeError('Media bundle checksum mismatch; run tools/fetch_media.py.')
     html = SOURCE.read_text(encoding='utf-8')
-    scripts = re.findall(r'<script[^>]*>([\s\S]*?)</script>', html)
+    scripts = re.findall(r'<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)</script>', html)
     styles = re.findall(r'<style[^>]*>([\s\S]*?)</style>', html)
     if len(scripts) != len(SCRIPTS) or len(styles) != 1:
         raise RuntimeError('Shared HTML layout changed; refusing to generate incomplete Android assets.')
@@ -37,7 +42,7 @@ def sync():
     css = styles[0] + '\n.android-export-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:10px 0;border-top:1px solid #dfe5da}.android-export-row>span{flex:1 1 100%;overflow-wrap:anywhere;font-size:13px}.android-export-row button{min-height:42px;padding:8px 14px;background:#edf4e8;border-radius:6px}#android-exports{margin-top:20px}\n'
     (DEST / 'style.css').write_text(css, encoding='utf-8', newline='\n')
     names = iter(SCRIPTS)
-    html = re.sub(r'<script[^>]*>[\s\S]*?</script>', lambda _: '<script src="' + next(names) + '"></script>', html)
+    html = re.sub(r'<script(?![^>]*\bsrc=)[^>]*>[\s\S]*?</script>', lambda _: '<script src="' + next(names) + '"></script>', html)
     html = re.sub(r'<style[^>]*>[\s\S]*?</style>', '<link rel="stylesheet" href="style.css">', html)
     html = html.replace('<script src="jszip.min.js">', '<script src="android.js"></script><script src="jszip.min.js">', 1)
     html = html.replace('电脑：直接写磁盘（大容量）', '安卓：边转换边保存（推荐）')
@@ -48,9 +53,11 @@ def sync():
     html = html.replace('磁盘模式需要电脑 Chrome／Edge 的文件保存授权；', '直写模式使用安卓系统文件保存器；')
     html = html.replace('电脑磁盘模式按块读取大文件', '边转换边保存模式按块读取大文件')
     (DEST / 'index.html').write_text(html, encoding='utf-8', newline='\n')
+    for name in ['reverse.js', 'media-bundle.js']:
+        shutil.copyfile(ROOT.parent / 'app' / name, DEST / name)
     shutil.copytree(ROOT.parent / 'docs/licenses', DEST / 'licenses', dirs_exist_ok=True)
     shutil.copyfile(ROOT.parent / 'THIRD_PARTY_NOTICES.md', DEST / 'THIRD_PARTY_NOTICES.md')
-    print('Synced Android v17 assets from the shared HTML.')
+    print('Synced Android v18 assets from the shared HTML.')
 
 
 if __name__ == '__main__':

@@ -24,7 +24,7 @@ async function start({ show = true } = {}) {
   const hashes = [...html.toString('utf8').matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi)]
     .map(match => "'sha256-" + createHash('sha256').update(match[1].replace(/\r\n/g, '\n')).digest('base64') + "'");
   const csp = "default-src 'self'; script-src 'self' " + hashes.join(' ') +
-    "; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data:; media-src 'self' blob: data:;" +
+    " 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data:; media-src 'self' blob: data:;" +
     " connect-src 'self' blob: data:; worker-src 'self' blob:; object-src 'none'; base-uri 'none'; frame-ancestors 'none'";
   let origin;
   const server = http.createServer((request, response) => {
@@ -32,6 +32,12 @@ async function start({ show = true } = {}) {
       response.writeHead(403).end(); return;
     }
     const pathname = new URL(request.url, origin).pathname;
+    if (['/media-bundle.js', '/reverse.js'].includes(pathname)) {
+      const script = fs.readFileSync(path.join(__dirname, pathname.slice(1)));
+      response.writeHead(200, { 'Content-Type': 'application/javascript; charset=utf-8', 'Content-Length': script.length,
+        'Content-Security-Policy': csp, 'X-Content-Type-Options': 'nosniff', 'Cache-Control': 'no-store' });
+      response.end(request.method === 'HEAD' ? undefined : script); return;
+    }
     if (!['/', '/MapCinema.html', '/favicon.ico'].includes(pathname)) { response.writeHead(404).end(); return; }
     if (pathname === '/favicon.ico') { response.writeHead(204).end(); return; }
     response.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Content-Length': html.length,
@@ -51,7 +57,7 @@ async function start({ show = true } = {}) {
     cancel: !(local(details.url) || details.url.startsWith('blob:' + origin + '/') || details.url.startsWith('data:'))
   }));
   const win = new BrowserWindow({ width: 1280, height: 900, minWidth: 860, minHeight: 600,
-    show: false, title: '方映 · 电脑大音频版 v16.1', icon: path.join(__dirname, 'icon.png'),
+    show: false, title: '方映 · 电脑大音频版 v18', icon: path.join(__dirname, 'icon.png'),
     backgroundColor: '#f4f5ef', webPreferences: { nodeIntegration: false, contextIsolation: true,
       sandbox: true, webSecurity: true, backgroundThrottling: false, spellcheck: false } });
   Menu.setApplicationMenu(Menu.buildFromTemplate([

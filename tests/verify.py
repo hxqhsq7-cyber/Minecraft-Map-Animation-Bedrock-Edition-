@@ -18,7 +18,7 @@ def main():
     manifest = json.loads((ROOT / 'release/build-manifest.json').read_bytes())
     package = ROOT / 'release' / manifest['package']
     assert digest(package) == manifest['package_sha256']
-    folder = '方映-电脑版-v17/'
+    folder = '方映-电脑版-v18/'
     with zipfile.ZipFile(package) as archive:
         assert archive.testzip() is None
         assert set(archive.namelist()) == {folder + name for name in manifest['files']}
@@ -27,6 +27,10 @@ def main():
             assert hashlib.sha256(archive.read(folder + name)).hexdigest() == sha, name
         assert not any('/Data/' in n or '/tests/' in n for n in archive.namelist())
     assert digest(ROOT / 'app/MapCinema.html') == manifest['html_sha256']
+    for source in (ROOT / 'app').rglob('*'):
+        if source.is_file():
+            name = 'resources/app/' + source.relative_to(ROOT / 'app').as_posix()
+            assert digest(source) == manifest['files'][name], name
     smoke = json.loads((ROOT / 'logs/smoke-results.json').read_bytes())
     assert smoke['uiConversionPassed'] and smoke['worldOnlyUI']['realFormSubmit']
     assert smoke['multiAnchorUI']['copyableSpawnAndOrientationCards']

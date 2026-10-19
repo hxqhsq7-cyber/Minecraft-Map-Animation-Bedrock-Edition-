@@ -33,13 +33,14 @@ flowchart LR
 - 导出可复用视频包、可导入世界文件或世界文件夹。
 - 将视频合并进已有世界，并输出世界副本。
 - 没有原视频包时，可升级保留完整方映播放器数据的旧世界。
+- 读取方映视频包或完整世界，将地图动画重新拼接为 H.264/AAC MP4，支持逐帧保存。
 - 可选区块上空提前加载：自定义 1–8 帧，在观看者所在的 16×16 区块固定放置临时地图墙，跨区块迁移。
 - Windows 版提供直接写入磁盘的转换方式和便携式 EXE。
 
 ## 下载
 
-- [Windows x64 便携包 v17](https://github.com/hxqhsq7-cyber/Minecraft-Map-Animation-Bedrock-Edition-/releases/tag/v17)：完整解压后运行 `方映.exe`。
-- [Android 安装版 v17](https://github.com/hxqhsq7-cyber/Minecraft-Map-Animation-Bedrock-Edition-/releases/tag/android-v17)：下载 APK 安装，要求 Android 8.0 或以上和较新的 Android System WebView。
+- [Windows x64 便携包 v18](https://github.com/hxqhsq7-cyber/Minecraft-Map-Animation-Bedrock-Edition-/releases/tag/v18)：完整解压后运行 `方映.exe`。
+- [Android 安装版 v18](https://github.com/hxqhsq7-cyber/Minecraft-Map-Animation-Bedrock-Edition-/releases/tag/android-v18)：下载 APK 安装，要求 Android 8.0 或以上和较新的 Android System WebView。
 
 请选择对应系统的发布附件；GitHub 自动提供的 Source code 压缩包是源码。
 
@@ -80,6 +81,18 @@ flowchart LR
 
 此入口需要世界中保留一个完整的方映播放器及元数据。它不是从任意地图墙恢复视频的工具；数据缺失或存在多个播放器时，当前版本无法自动升级。仅替换电脑软件不会更新已经导入游戏的世界。
 
+## 地图动画导出 MP4
+
+主页第 **04「地图动画 → 导出 MP4」** 区域选择 `.mcvideo` 或 `.mcworld`，选择保存方式，点击“导出 MP4”。无需原视频，不修改输入文件。世界应先退出游戏并完整导出，当前支持世界中保留一个完整方映播放器的情况。
+
+优先使用“直接保存”：逐帧读取、拼接、编码并写入 MP4。内存模式在完成后提供下载与预览，最高 256 MiB；手机仍受可用内存、系统编码器和 WebView 版本限制。安卓保存后可用视频播放器打开或分享。
+
+分辨率为横纵地图数各乘 128，例如 8×4 张地图为 1024×512。按原采样帧率恢复一轮播放，重复帧按原停留时间展开，增量帧补齐未变化的地图块。可合成视频包／世界保留的方映音轨，输出 AAC；没有音轨时输出无声 MP4。某些播放器会把 AAC 的少量头尾填充计入总时长，视频轨仍按原刻数输出，音轨重编码有损。
+
+普通静态地图墙缺少全部帧和时序时不能自动恢复视频；缺失地图像素、损坏数据库或不支持的压缩会停止导出，不补空白帧。读取支持数据库日志以及活动 SST 表，兼容未压缩、Snappy、zlib 和 raw-deflate，当前不支持 Zstandard 表。
+
+MP4 编码在本机完成，不录屏，也不要求游戏运行。H.264 编码依赖系统 WebCodecs；缺少原生 AAC 时使用内置离线备用编码器。转换时已丢失的分辨率、裁剪内容、被抑制的细微变化和未采样帧无法找回。
+
 ## 上空提前加载（实验性）
 
 新建视频时，在“设置播放器”开启“上空提前加载”，填写提前帧数和高度。默认关闭；开启后的默认值为提前 3 帧、距玩家脚下 12 格，可设置 1–8 帧、8–64 格。
@@ -106,11 +119,11 @@ flowchart LR
 
 ## 验证范围
 
-v17 已通过打包 EXE 的实际转换与旧世界升级流程检查，以及导出 ZIP、地图引用、帧时序和音轨数据核验。
+v18 已通过打包 EXE 的实际转换与旧世界升级流程检查，以及导出 ZIP、地图引用、帧时序和音轨数据核验。
 
 已使用官方 Bedrock Dedicated Server **1.26.30.5** 验证修复后函数的加载、播放时钟计数和首帧推进；也在已加载区块内，用非循环短视频样例验证了脉冲命令方块连续两次启动并播放至结束。
 
-v17 的提前加载另通过 9 项官方引擎断言，覆盖实际命令方块事件、结构 API 放墙、多人共用、跨区块清理、无地图物品掉落、二次播放和结束清理；观看者坐标由测试模拟，没有连接客户端。电脑 EXE 流程验证自定义设置、新视频包与无视频包旧世界升级的内存、磁盘和文件夹输出。安卓版同步共享核心并校验签名，手机安装和客户端预渲染效果尚未验收。
+v18 的提前加载另通过 9 项官方引擎断言，覆盖实际命令方块事件、结构 API 放墙、多人共用、跨区块清理、无地图物品掉落、二次播放和结束清理；观看者坐标由测试模拟，没有连接客户端。电脑 EXE 流程验证自定义设置、新视频包与无视频包旧世界升级的内存、磁盘和文件夹输出。安卓版同步共享核心并校验签名，手机安装和客户端预渲染效果尚未验收。
 
 这些检查不代表所有基岩版版本和设备都已兼容，也不替代 Minecraft 客户端中的整段视频画面、流畅度与音画同步验收。
 
@@ -140,6 +153,10 @@ node tests/playback.cjs
 node tests/world-only.cjs
 node tests/multi-anchor.cjs
 node tests/prefetch.cjs
+node tests/reverse.cjs
+python tests/reverse-engine.py
+node tests/reverse-smoke.cjs
+python tests/verify-reverse.py
 node tests/smoke.cjs
 python tests/verify.py
 ```

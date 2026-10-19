@@ -58,7 +58,7 @@ select{width:100%;min-width:0;text-overflow:ellipsis}
 </style>
 </head>
 <body>
-  <header class="topbar"><a class="brand" href="#"><span class="brand-mark">▦</span><span>方映 <small>MapCinema</small></span></a><span class="badge">基岩版 · v17</span></header>
+  <header class="topbar"><a class="brand" href="#"><span class="brand-mark">▦</span><span>方映 <small>MapCinema</small></span></a><span class="badge">基岩版 · v18</span></header>
   <main>
     <section class="intro"><span class="eyebrow">让地图，动起来。</span><h1>把一段视频，<br>搬进你的世界。</h1><p>把视频保存为可复用的视频包，加入你已经创建的世界。<br class="desktop">手机本地转换，地图、结构、音轨和命令链一起带走。</p><div class="chips"><span>安卓 / Windows</span><span>支持已有世界</span><span>视频不上传</span></div></section>
     <form id="converter">
@@ -101,6 +101,19 @@ select{width:100%;min-width:0;text-overflow:ellipsis}
       <form id="merger"><div class="two-columns"><div class="field"><label for="import-video" id="import-video-label">视频包 .mcvideo</label><input id="import-video" type="file" accept=".mcvideo,.zip" required></div><div class="field"><label for="import-world">已有世界 .mcworld</label><input id="import-world" type="file" accept=".mcworld,.zip" required></div></div><div class="field"><label for="merge-action">处理内容</label><select id="merge-action"><option value="install">加入视频（自动更新播放时钟）</option><option value="world">仅用旧世界升级（无需视频包）</option><option value="repair">修复／补配音（保留地图与帧）</option><option value="optimize">优化已安装视频（重建地图引用）</option></select><p class="hint" id="merge-action-hint">加入／修复／优化需要原 .mcvideo；没有视频包时改选“仅用旧世界升级（无需视频包）”。</p></div><div class="field"><label class="toggle"><input id="merge-reuse" type="checkbox" checked><span>合并旧包时复用相同地图</span></label><p class="hint">固定坐标模式跳过静止块刷新，盔甲架模式加载完整帧。已有视频选“优化已安装视频”，使用原 .mcvideo 和已安装的世界，无需重新抽帧。优化会重建本视频的地图引用及帧结构，保留旧数据库记录，文件可能增大。原文件保持原样；先停止播放再导出，优化后完全重启游戏再测试。</p></div><div class="field"><label for="merge-anchor-mode">合并后的画面定位</label><select id="merge-anchor-mode"><option value="package" selected>沿用视频包／已安装播放器</option><option value="fixed">固定坐标</option><option value="armor_stand">命名盔甲架</option></select><p class="hint">两种方式均可选。已安装视频切换定位方式或修改锚点时，选择“优化已安装视频”，会重建帧结构，无需重新抽帧。“修复／补配音”只沿用现有定位。</p></div><div id="merge-anchor-options" hidden><div class="field"><label for="merge-anchor-name">盔甲架名称</label><input id="merge-anchor-name" value="方映屏幕" maxlength="40"></div><div class="field"><label>画面偏移 X / Y / Z</label><div class="coordinates"><label>X<input id="merge-anchor-x" type="number" value="0" min="-1024" max="1024"></label><label>Y<input id="merge-anchor-y" type="number" value="2" min="-1024" max="1024"></label><label>Z<input id="merge-anchor-z" type="number" value="0" min="-1024" max="1024"></label></div></div></div><div class="field"><label for="merge-prefetch-mode">上空提前加载 · 16×16 区块</label><select id="merge-prefetch-mode"><option value="keep">沿用视频包／旧世界设置</option><option value="on">开启并自定义</option><option value="off">关闭并清理旧墙</option></select><p class="hint">“仅用旧世界升级”也能添加此功能，无需原视频包。请先停止播放，再导出并导入世界副本。</p></div><div id="merge-prefetch-options" hidden><div class="two-columns"><div class="field"><label for="merge-prefetch-frames">提前帧数 / 墙数</label><input id="merge-prefetch-frames" type="number" min="1" max="8" value="3"></div><div class="field"><label for="merge-prefetch-height">距玩家脚下高度 / 格</label><input id="merge-prefetch-height" type="number" min="8" max="64" value="12"></div></div><p class="hint">固定在玩家所在的 16×16 区块上空，最多 8 面墙；跨区块清理旧位置并重建。同区块观看者共用，播放结束自动清理。仅使用空中空气区，不覆盖已有建筑。额外地图刷新可能增加卡顿，不能保证客户端提前渲染；需基岩版 1.21.90+ 稳定脚本 API。</p></div><div class="field"><label for="merge-audio-file">补充／更换 13 号唱片音轨（可选）</label><input id="merge-audio-file" type="file" accept="audio/*,video/mp4,.wav,.ogg,.mp3,.m4a,.mp4"><p class="hint">可选原视频或独立音频；留空沿用包内／世界现有音轨。新音轨使用上方“音频处理额度”，安卓也可提高到 4 GiB。给已安装的视频补配音时，处理内容选择“修复／补配音”，保留原地图，不重新抽帧。</p></div><div class="field"><label for="merge-audio-start">补充音轨起点 / 秒</label><input id="merge-audio-start" type="number" min="0" step="0.001" value="0"><p class="hint">按视频包的完整播放时长截取，不足的尾部补静音。</p></div><div class="field"><label for="merge-output">合并输出</label><select id="merge-output"><option value="world">世界文件 .mcworld</option><option value="folder">空的世界文件夹（电脑大容量）</option></select><p class="hint">沿用上方“处理方式”。超大 ZIP64 世界若无法被游戏导入，可改选文件夹。选择文件夹前请关闭游戏，且输出文件夹必须为空。</p></div><button id="merge-button" type="submit" class="merge-button">生成世界副本 ↗</button></form>
       <p class="hint">此步骤会将地图像素和播放器写入世界副本。电脑磁盘模式按块读取大文件；兼容模式在内存中处理。没有 .mcworld 文件时，需先导出或获取该世界的存档压缩包。</p>
     </section>
+    <section class="panel merge-panel" id="reverse-panel">
+      <div class="section-title"><span class="step">04</span><h2>地图动画 → 导出 MP4</h2></div>
+      <p class="hint">读取方映视频包，或保留一个完整方映播放器的旧世界，按帧拼接地图并恢复时序。无需原视频，原文件保持原样；无法找回转换时损失的分辨率或裁剪内容。</p>
+      <form id="reverse-form">
+        <div class="field"><label for="reverse-file">方映 .mcvideo ／ 世界 .mcworld</label><input id="reverse-file" type="file" accept=".mcvideo,.mcworld,.zip" required></div>
+        <div class="field"><label for="reverse-storage">MP4 保存方式</label><select id="reverse-storage"><option value="disk">直接保存（推荐，逐帧写入）</option><option value="memory">内存生成后下载（最高 256 MiB）</option></select></div>
+        <div class="field"><label class="toggle"><input id="reverse-audio" type="checkbox" checked><span>合成世界／视频包中现有音轨</span></label><p class="hint">输出 H.264 视频及可选 AAC 音轨。分辨率为横向地图数 ×128、纵向地图数 ×128，按原采样帧率导出一轮；连续重复帧按原停留时间恢复。普通静态地图墙、缺少地图像素或帧序列的世界无法自动还原为视频。编码能力取决于系统与 WebView，请保持应用在前台。</p></div>
+        <button id="reverse-export" class="merge-button" type="submit">导出 MP4 ↗</button><button id="reverse-cancel" type="button" class="text-button" hidden>取消导出</button>
+      </form>
+      <p class="hint" id="reverse-info"></p><progress id="reverse-progress" max="100" value="0" style="width:100%"></progress><p id="reverse-status" class="hint" aria-live="polite">选择文件后点击导出。旧世界请先退出游戏并完整导出。</p>
+      <div id="reverse-result" hidden><p id="reverse-result-text" class="hint"></p><a id="reverse-download" class="download-button" hidden>下载 MP4 ↓</a><video id="reverse-preview" controls playsinline style="max-width:100%;max-height:360px"></video></div>
+    </section>
+
     <section class="how-it-works"><div><span>01 / 视频</span><p>在本机按游戏刻抽帧</p></div><div><span>02 / 地图 + 结构</span><p>写入地图像素和展示框引用</p></div><div><span>03 / 世界</span><p>用 structure 命令链逐帧播放</p></div></section>
     <details class="faq"><summary>使用前了解这些</summary><p>面向正式版基岩版 1.21.60 及以上格式。国内渠道版、预览版和未来版本需要分别验证。地图像素需要写入世界数据库；.mcvideo 通过本工具合并，最终导入游戏的文件是完整世界副本。</p><p>转换和压缩都在手机本地完成。选中视频后默认使用完整时长；电脑磁盘模式最高 64 GiB，安卓兼容模式最高 1024 MiB。每次最多保存 16,384 个播放帧；开启重复帧合并时最多检测 1,000,000 个采样帧。未合并时可容纳 10 分钟 × 20 FPS 的 12,000 帧；横纵各 1–16 张地图。地图量还随屏幕大小增长，请以页面估算为准。磁盘模式需要电脑 Chrome／Edge 的文件保存授权；内存模式仍受可用内存约束。</p><p>新建世界会生成平坦地形；导入已有世界时保留原数据库与附加包。新增的地图编号随机分配。播放器安装、停止命令会放置和清除指定命令链区域的方块，请使用空地。播放时钟仅一个命令方块，旁边一格红石启动；旧世界升级时会保留旧控制区的清理命令。开始前等待 20 游戏刻，变化画面约每 40 游戏刻完整刷新。</p><p>播放器添加一个预加载的常加载区域，以防走远后停播；创建失败时需检查游戏的常加载区域数量。停止会拆除命令链并保留最后画面；清理命令也会移除常加载区域。移动同一个视频的控制组前，请先在旧启动坐标执行清理控制命令。</p><p>命名盔甲架模式每个实际播放帧都会用 execute at 定位并加载完整结构，命令链固定在启动坐标 Z+6。地图内容仍可复用；不使用静止块跳过。画面按方块网格放置，不是可平滑移动的显示实体，移动后旧画面会保留；画面只在下一播放帧刷新，重复帧合并的长停留期间不会持续追踪。控制区申请一个常加载区域，多个屏幕使用玩家已加载的区块，不逐个占用常加载区域；盔甲架移出已加载区、跨维度或被移除时，后续结构无法定位。请避免画面覆盖盔甲架／命令链，且画面须在世界高度内。停止仍在原启动坐标执行；清理还会移除历史绑定标签与常加载区域。</p><p>音轨由资源包替换 record.13，播放器使用独立事件防止多视频串音。开播时附近 64 格内玩家会听到配音；中途加入需等下一轮或重新播放。调高游戏的唱片音量。声音按实际时间播放，画面按游戏刻推进，游戏卡顿可能造成音画偏移。唱片替换范围为启用该资源包的世界；多个替换包之间遵循资源包优先级。</p></details>
   </main>
@@ -1614,7 +1627,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     ensure(level.length >= 8 && levelView.getUint32(4, true) === level.length - 8, 'level.dat 长度校验失败。');
     const { value: oldLevel, levelNameSpan } = readWorldNbt(level.subarray(8));
     ensure(levelNameSpan && typeof oldLevel.LevelName === 'string', '无法读取原世界名称。');
-    const suffix = '（播放修复 v17）', worldName = oldLevel.LevelName.replace(/（播放修复 v\d+(?:\.\d+)?）$/, '') + suffix;
+    const suffix = '（播放修复 v18）', worldName = oldLevel.LevelName.replace(/（播放修复 v\d+(?:\.\d+)?）$/, '') + suffix;
     const nameBytes = bytes(worldName); ensure(nameBytes.length <= 65535, '世界名称过长。');
     const body = concat([level.subarray(8, 8 + levelNameSpan[0]), u16(nameBytes.length), nameBytes, level.subarray(8 + levelNameSpan[1])]);
     const player = playerFiles(world, { namespace: ns, count, ticks, loop, origin: m.origin, rotation, columns,
@@ -1645,7 +1658,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     controllerLayout, controllerPosition, controllerNodes, controllerClearCommands, controllerDimensions, playbackLayout, playbackControlOffset, playerFiles, frameTiming, sameFrame, writeVideoFrames,
     crc32c, Journal, records, manifestInfo, databaseWriter, levelDat, packFiles,
     enablePack, finishVideoPackage, readVideoPackage, installVideoPackage, upgradeInstalledWorld, compressEntries,
-    audioFiles, readAudio, bindAudio, normalizePrefetch, prefetchRuntime, normalizeAnchor, anchorSelectors, TileReuse, tileDigest, sha256Fallback, tileWithinThreshold };
+    audioFiles, readAudio, bindAudio, normalizePrefetch, prefetchRuntime, normalizeAnchor, anchorSelectors, TileReuse, tileDigest, sha256Fallback, tileWithinThreshold, readWorldNbt, worldFrameIds };
   if (typeof module !== 'undefined') module.exports = root.MapCinemaCore;
 })(globalThis);
 </script><script>/* Incremental ZIP/ZIP64 I/O for desktop File System Access; no full-file buffering. */
@@ -1658,7 +1671,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     let value = index; for (let i = 0; i < 8; i++) value = value & 1 ? 0xedb88320 ^ (value >>> 1) : value >>> 1;
     return value >>> 0;
   });
-  function crc32(data) { let value = 0xffffffff; for (const byte of data) value = crcTable[(value ^ byte) & 255] ^ (value >>> 8); return (value ^ 0xffffffff) >>> 0; }
+  function crc32(data, previous = 0) { let value = (previous ^ 0xffffffff) >>> 0; for (const byte of data) value = crcTable[(value ^ byte) & 255] ^ (value >>> 8); return (value ^ 0xffffffff) >>> 0; }
   function buffer(length) { const bytes = new Uint8Array(length); return [bytes, new DataView(bytes.buffer)]; }
   function safeNumber(value) { const n = Number(value); if (!Number.isSafeInteger(n) || n < 0) throw new Error('文件偏移超过支持范围。'); return n; }
   function asBytes(data) { return typeof data === 'string' ? encoder.encode(data) : data instanceof Uint8Array ? data : new Uint8Array(data); }
@@ -2215,7 +2228,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       const height = info.controllerSize?.[1] ?? C.playbackLayout(info.frameCount).height;
       $('result-description').textContent += ` 播放时钟只占一个命令方块；底部 Y 不得高于 ${320 - height}。`;
       if (info.prefetch) $('result-description').textContent += ` 已开启区块上空提前加载：${info.prefetch.frames} 帧，上方 ${info.prefetch.height} 格，范围 16×16；额外墙需空中空气区，客户端预渲染效果需要进游戏验证。`;
-      if (info.worldOnlyUpgrade) $('result-description').textContent += ` 仅凭旧世界完成升级，保留原地图 ID、时序与音轨，并重建 ${info.fullFrameCount} 个周期完整帧；进入名称带“播放修复 v17”的副本，在原坐标重新播放。`;
+      if (info.worldOnlyUpgrade) $('result-description').textContent += ` 仅凭旧世界完成升级，保留原地图 ID、时序与音轨，并重建 ${info.fullFrameCount} 个周期完整帧；进入名称带“播放修复 v18”的副本，在原坐标重新播放。`;
       else if (info.updatedController && !info.optimizedMaps) $('result-description').textContent += ' 已保留地图与帧结构；在原播放坐标重新运行播放命令安装新控制组。';
     }
     if (info.sourceFrameCount > info.frameCount) $('result-description').textContent += ` 已把 ${info.sourceFrameCount} 个采样帧合并为 ${info.frameCount} 个播放帧，按原节奏停留与循环。`;
@@ -2377,11 +2390,11 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     let destination;
     try {
       if (disk) {
-        destination = await MapCinemaLarge.pickDestination({ output: $('merge-output').value }, worldFile.name.replace(/\.(mcworld|zip)$/i, '') + (worldOnlyUpgrade ? '-播放修复-v17' : '-含视频'), checkCancel);
+        destination = await MapCinemaLarge.pickDestination({ output: $('merge-output').value }, worldFile.name.replace(/\.(mcworld|zip)$/i, '') + (worldOnlyUpgrade ? '-播放修复-v18' : '-含视频'), checkCancel);
         const result = await MapCinemaLarge.merge({ packageFile, worldFile, destination, checkCancelled: checkCancel, repairController, prepareAudio, reuseTiles, optimizeExisting, anchorOverride, prefetchOverride, worldOnlyUpgrade,
           onProgress: async (...args) => { progress(...args); await pause(); } });
         showResult(null, { name: result.info.name, origin: result.info.origin, output: 'world' }, result.info, result.saved);
-        progress(100, '世界副本已写入磁盘', worldOnlyUpgrade ? '旧世界已升级，无需视频包。导入名称带“播放修复 v17”的副本，在原坐标播放。' : optimizeExisting ? `已优化为 ${result.info.mapCount} 张独立地图；旧记录保留。导入后在原坐标播放。` : repairController ? '播放器布局已更新，原有地图与帧结构已保留。导入副本后在原坐标执行播放命令。' : `${result.info.frameCount} 帧已加入；原世界文件保持原样。`); return;
+        progress(100, '世界副本已写入磁盘', worldOnlyUpgrade ? '旧世界已升级，无需视频包。导入名称带“播放修复 v18”的副本，在原坐标播放。' : optimizeExisting ? `已优化为 ${result.info.mapCount} 张独立地图；旧记录保留。导入后在原坐标播放。` : repairController ? '播放器布局已更新，原有地图与帧结构已保留。导入副本后在原坐标执行播放命令。' : `${result.info.frameCount} 帧已加入；原世界文件保持原样。`); return;
       }
       progress(0, worldOnlyUpgrade ? '正在读取旧世界…' : '正在读取视频包和已有世界…', '无需重新抽帧，所有文件均在本机处理。'); await pause();
       const videoZip = worldOnlyUpgrade ? null : await JSZip.loadAsync(packageFile), world = await openWorld(worldFile); checkCancel();
@@ -2395,8 +2408,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         checkCancel(); progress(75 + m.percent * 0.25, '正在打包世界副本…', `${m.percent.toFixed(0)}% · 请保持页面在前台`);
       });
       checkCancel();
-      showResult(blob, { name: worldOnlyUpgrade ? worldFile.name.replace(/\.(mcworld|zip)$/i, '') + '-播放修复-v17' : `${worldFile.name.replace(/\.(mcworld|zip)$/i, '')}-含${info.name}`, origin: info.origin, output: 'world' }, info);
-      progress(100, worldOnlyUpgrade ? '旧世界升级完成' : optimizeExisting ? '地图优化完成' : repairController ? '播放器更新完成' : '合并完成', worldOnlyUpgrade ? '导入名称带“播放修复 v17”的世界副本，在原坐标执行播放命令。原世界未修改。' : optimizeExisting ? `已优化为 ${info.mapCount} 张独立地图；旧记录保留。导入世界副本，在原坐标重新播放。` : repairController ? '地图与帧已保留。导入世界副本，在原坐标执行播放命令即可安装更新后的播放器。' : `${info.frameCount} 帧已加入世界副本。导入游戏后会出现一个新世界，名称可能与原世界相同。`);
+      showResult(blob, { name: worldOnlyUpgrade ? worldFile.name.replace(/\.(mcworld|zip)$/i, '') + '-播放修复-v18' : `${worldFile.name.replace(/\.(mcworld|zip)$/i, '')}-含${info.name}`, origin: info.origin, output: 'world' }, info);
+      progress(100, worldOnlyUpgrade ? '旧世界升级完成' : optimizeExisting ? '地图优化完成' : repairController ? '播放器更新完成' : '合并完成', worldOnlyUpgrade ? '导入名称带“播放修复 v18”的世界副本，在原坐标执行播放命令。原世界未修改。' : optimizeExisting ? `已优化为 ${info.mapCount} 张独立地图；旧记录保留。导入世界副本，在原坐标重新播放。` : repairController ? '地图与帧已保留。导入世界副本，在原坐标执行播放命令即可安装更新后的播放器。' : `${info.frameCount} 帧已加入世界副本。导入游戏后会出现一个新世界，名称可能与原世界相同。`);
     } catch (e) {
       if (destination) await destination.writer.abort();
       error(e.name === 'AbortError' ? '已取消保存位置选择。' : ['SecurityError', 'NotAllowedError'].includes(e.name) ? '浏览器未允许磁盘访问。请用电脑 Chrome／Edge；若本地 HTML 被限制，请解压电脑版并运行本地启动器。' : e.message || String(e));
@@ -2430,5 +2443,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
   window.addEventListener('resize', () => { if (!$('result').hidden) MapCinemaCommands.resize($('commands')); });
 })();
 </script>
+<script src="media-bundle.js"></script>
+<script src="reverse.js"></script>
 </body>
 </html>

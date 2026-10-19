@@ -231,7 +231,7 @@ public final class MainActivity extends Activity {
                     if(e.stream!=null) {if(!abort)e.stream.flush();e.stream.close();e.stream=null;}
                     e.done=!abort;
                     JSONObject o=ok();o.put("token",token);o.put("name",e.name);o.put("bytes",e.size);respond(request,o);
-                    if(abort) {exports.remove(token);toast("导出已中断；请删除未完成文件，不要将它导入游戏。");}
+                    if(abort) {exports.remove(token);toast("导出已中断；请删除未完成文件。");}
                 }catch(Exception ex){fail(request,"关闭文件失败："+ex.getMessage(),false);}
             });
         }
@@ -239,7 +239,7 @@ public final class MainActivity extends Activity {
             Export e=exports.get(token);if(e==null||!e.done){toast("文件尚未完成保存。");return;}
             runOnUiThread(()->{
                 Intent intent=new Intent(share?Intent.ACTION_SEND:Intent.ACTION_VIEW);
-                String mime=e.name.endsWith(".mcworld")?"application/x-mcworld":e.name.endsWith(".txt")?"text/plain":e.name.endsWith(".html")?"text/html":"application/octet-stream";
+                String mime=e.name.endsWith(".mp4")?"video/mp4":e.name.endsWith(".mcworld")?"application/x-mcworld":e.name.endsWith(".txt")?"text/plain":e.name.endsWith(".html")?"text/html":"application/octet-stream";
                 if(share){intent.setType(mime);intent.putExtra(Intent.EXTRA_STREAM,e.uri);}else intent.setDataAndType(e.uri,mime);
                 intent.setClipData(ClipData.newRawUri(e.name,e.uri));intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 try{startActivity(Intent.createChooser(intent,share?"分享文件":"选择应用打开／导入"));}catch(RuntimeException ex){toast("未找到可打开此格式的应用，可在文件管理器中查看已保存文件。");}
