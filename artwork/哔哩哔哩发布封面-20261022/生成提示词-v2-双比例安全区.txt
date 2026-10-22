@@ -1,0 +1,17 @@
+生成方式：内置 image_gen 编辑原封面；保留原图，另存 v2。
+设计：同一张横向图片同时用于 16:9 和居中 4:3 裁切，标题、标志和地图墙集中于中央，两侧保留冗余空间。
+裁切计算：16:9 居中裁为 4:3，保留中央 75% 宽度，左右各裁去 12.5%；主体在此基础上进一步内收。
+使用时选择居中裁切，避免将裁切框偏向单侧。
+最终提示词：
+Use case: precise-object-edit / marketing thumbnail layout adjustment.
+Edit the supplied MapCinema cover. Preserve the existing exact Chinese copy, dark forest-green typography, warm off-white palette, map grid icon, single unified 4-column by 3-row Minecraft landscape map wall, ivory play triangle, and simple style. The requested change is CROP-SAFE PADDING for one image used in BOTH 16:9 and centered 4:3 display.
+
+Output ONE wide 16:9 master image. Resize and move the ENTIRE existing content group inward so ALL meaningful pixels, including the logo, every word, and the complete outer edges of the map wall, lie STRICTLY inside x=19% to x=81% of the full canvas and y=20% to y=80%. The content group should occupy only about 62% of the full image width and 60% of the full image height. The outer left 19% and right 19% must be completely empty solid background. Add generous blank space above and below as well. Keep the two-column arrangement: text on left and map wall on right, balanced and compact. Product name remains strongest, text remains readable. The mathematical centered 4:3 crop of a 16:9 image removes 12.5% from each side, so this design MUST leave a further safety margin inside those crop edges. Do not make the original edge-to-edge composition again.
+Keep text verbatim:
+"MapCinema"
+"方映"
+"把视频搬进"
+"我的世界"
+"基岩版地图动画工具"
+Do not change text wording or add anything.
+Background must be one perfectly flat solid warm ivory color, no mottling, no texture, no vignette, no gradients. No effects, no shadows, no glow, no particles, no flares, no decorative lines, no crop guides, no safe-area rectangles, no labels about ratios or margins, no watermark. The large blank outer margins are intentional, do not fill them.

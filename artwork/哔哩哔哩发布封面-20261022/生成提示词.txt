@@ -1,0 +1,11 @@
+生成方式：内置 image_gen（imagegen 技能），未使用 CLI。
+封面主题：方映 MapCinema 软件发布，简洁无特效。
+最终提示词：
+Use case: ads-marketing
+Asset type: finished Chinese Bilibili video thumbnail for the software 方映 MapCinema. One landscape image, 1920 x 1080 pixels, 16:9.
+Primary request: extremely simple, calm, clean software release cover. Absolutely no special effects.
+Background: completely flat solid warm off-white, matching the app's quiet cream and forest-green visual identity.
+Composition: generous margins, ample empty space. On the left, a small plain green square map-grid mark followed by small "MapCinema"; below it an exceptionally large bold dark forest-green Chinese product name "方映". Beneath the name two large bold clean Chinese sans-serif lines, exactly "把视频搬进" and "我的世界". At the bottom left, a single smaller readable line "基岩版地图动画工具". This is the complete text; do not add any other words, versions, promotional badges, platform icons or claims.
+On the right, one simple FRONT-FACING rectangular Minecraft-style map picture wall, four columns by three rows with thin muted brown item-frame borders. The twelve maps form ONE unified understated pixel-art landscape of green grass, dark green blocky trees, pale blue sky and a few white square clouds. Crisp chunky pixels, flat and restrained colors, clear aligned tile seams. A small solid ivory right-pointing play triangle at the center of this map wall makes the video concept clear. It is a flat illustrative object with no perspective, no surrounding scenery, no floating layers.
+Typography: accurate simplified Chinese, sturdy modern Chinese sans-serif, very legible at small thumbnail size; product name has strongest hierarchy. Layout reads as a carefully typeset minimal poster. All visible wording must be exactly as specified.
+Constraints: no gradients, no shadows, no glow, no light rays, no particles, no lens flares, no speed lines, no sparkles, no outlines around typography, no metallic letters, no 3D lettering, no textured background, no photorealism, no characters, no busy Minecraft scene, no tiny details, no decorative frame, no arrows, no watermark. Do not mimic an actual application screenshot. Keep everything simple, flat, balanced and uncluttered.

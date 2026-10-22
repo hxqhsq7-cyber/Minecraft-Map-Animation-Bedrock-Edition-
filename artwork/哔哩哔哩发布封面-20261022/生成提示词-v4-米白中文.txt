@@ -1,0 +1,15 @@
+生成方式：内置 image_gen 编辑 v3，保留旧图，另存 v4。
+修改：全部中文文字改成米白色；英文 MapCinema 和图标保留深绿色，保留中央裁切安全区和 Minecraft 毛玻璃背景。
+视觉检查：文字内容正确，米白字与浅色背景对比偏弱，缩略图可读性弱于深绿字版本。
+最终提示词：
+Use case: precise-object-edit / text color change.
+Edit the supplied image with ONE narrowly scoped change: change the fill color of ALL CHINESE LETTERING from dark green to warm ivory / creamy off-white, approximately #F5EFDF.
+The exact Chinese strings to recolor are:
+"方映"
+"把视频搬进"
+"我的世界"
+"基岩版地图动画工具"
+
+Preserve absolutely everything else: exact wording and correct characters, original font shapes, weight, sizes, line breaks, positions, text spacing, current 16:9 composition and central 4:3 crop-safe margins, Minecraft frosted-glass landscape background with the same brightness and colors and blur, foreground four-by-three map wall, frame borders, play triangle.
+The English word "MapCinema" and its small grid logo MUST remain the original dark green.
+Do not darken or recolor the background. Do not change the map wall. Do not move or resize any elements. Apply flat solid warm ivory ink only to the specified Chinese glyphs. No shadows, no outlines, no glow, no gradients on text, no additional effects, no new text, no watermark. This is only a Chinese typography fill-color replacement.

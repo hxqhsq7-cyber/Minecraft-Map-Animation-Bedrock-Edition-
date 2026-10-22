@@ -412,11 +412,12 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       item_frame_photo_bit: N.byte(0),
     })], entities);
   }
-  function controllerLayout(count) {
+  function controllerLayout(count, singleChunk = false) {
     if (!Number.isInteger(count) || count < 1 || count > LIMITS.MAX_FRAMES) throw new Error(`命令链支持 1–${LIMITS.MAX_FRAMES} 帧`);
-    const height = Math.min(count, 128), runs = Math.ceil(count / height);
+    const height = Math.min(count, singleChunk ? 256 : 128), runs = Math.ceil(count / height);
     // Parallel vertical legs are separated by air. Only their ends are joined.
-    return { width: Math.min(runs, 16) * 2 - 1, depth: Math.ceil(runs / 16) * 2 - 1, height };
+    const columns = singleChunk ? 8 : 16;
+    return { width: Math.min(runs, columns) * 2 - 1, depth: Math.ceil(runs / columns) * 2 - 1, height };
   }
   function controllerPosition(index, layout) {
     const { width, height } = layout, columns = (width + 1) / 2;
@@ -425,8 +426,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     return [(plane % 2 ? columns - 1 - column : column) * 2,
       run % 2 ? height - 1 - step : step, plane * 2];
   }
-  function controllerNodes(count) {
-    const layout = controllerLayout(count), nodes = [];
+  function controllerNodes(count, singleChunk = false) {
+    const layout = controllerLayout(count, singleChunk), nodes = [];
     for (let frame = 0; frame < count; frame++) {
       const position = controllerPosition(frame, layout), previous = nodes.at(-1)?.position;
       if (previous && position.some((n, axis) => Math.abs(n - previous[axis]) === 2)) {
@@ -558,10 +559,15 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       return { index, id: this.base + BigInt(index), fresh };
     }
   }
-  function controllerStructure(count, ticks, loop, command, frameTicks) {
-    const layout = controllerLayout(count), { width, depth, height } = layout;
-    const timing = frameTiming(count, ticks, frameTicks);
-    const directions = [0, 1, 2, 3, 4, 5], nodes = controllerNodes(count);
+  function controllerStructure(count, ticks, loop, command, frameTicks, includePower = false, commandTiming) {
+    const layout = controllerLayout(count, includePower), { depth, height } = layout;
+    const width = layout.width + (includePower ? 1 : 0);
+    const timing = commandTiming ? { totalTicks: commandTiming.totalTicks, durations: null } : frameTiming(count, ticks, frameTicks);
+    if (commandTiming && (!Array.isArray(commandTiming.delays) || commandTiming.delays.length !== count ||
+        commandTiming.delays[0] !== 0 || !commandTiming.delays.every(n => Number.isInteger(n) && n >= 0) ||
+        !Number.isSafeInteger(timing.totalTicks) || timing.totalTicks < 1 || commandTiming.delays.reduce((a, b) => a + b, 0) >= timing.totalTicks)) throw new Error('命令链逐命令时序无效。');
+    const directions = [0, 1, 2, 3, 4, 5], nodes = controllerNodes(count, includePower).map(node =>
+      includePower ? { ...node, position: [node.position[0] + 1, ...node.position.slice(1)] } : node);
     const palette = [block('command_block', { conditional_bit: N.byte(0), facing_direction: N.int(1) }),
       block('repeating_command_block', { conditional_bit: N.byte(0), facing_direction: N.int(1) }),
       ...directions.map(d => block('chain_command_block', {
@@ -579,7 +585,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         Command: N.string(frame === null ? 'testforblock ~ ~ ~ minecraft:chain_command_block' : command(frame, position)),
         CustomName: N.string(frame === null ? 'MapCinema 转接' : `MapCinema ${frame + 1}/${count}`),
         // A command's delay occurs BEFORE its frame: wait for the preceding image.
-        TickDelay: N.int(frame === null ? 0 : i === 0 ? (loop ? timing.totalTicks : 0) : timing.durations[frame - 1]),
+        TickDelay: N.int(frame === null ? 0 : i === 0 ? (loop ? timing.totalTicks : 0) : commandTiming ? commandTiming.delays[frame] : timing.durations[frame - 1]),
         ExecuteOnFirstTick: N.byte(i === 0 && loop ? 1 : 0),
         auto: N.byte(i === 0 ? 0 : 1), powered: N.byte(0), conditionMet: N.byte(1),
         conditionalMode: N.byte(0), LPCommandMode: N.int(i === 0 ? (loop ? 1 : 0) : 2),
@@ -589,6 +595,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         UpdateLastExecution: N.byte(1), Version: N.int(38), isMovable: N.byte(1),
       }) });
     }
+    if (includePower) { indices[0] = palette.length; palette.push(block('redstone_block')); }
     return { data: structure([width, height, depth], indices, palette, entities), width, depth, height };
   }
   function playbackLayout(count) {

@@ -1,0 +1,15 @@
+生成方式：内置 image_gen 编辑 v2，保留旧版，另存 v3。
+修改：背景替换为 Minecraft 风景，背景模糊并覆盖浅色半透明毛玻璃质感；前景文字和地图墙保持清晰，沿用中央双比例裁切安全区。
+最终提示词：
+Use case: background replacement / precise-object-edit.
+Edit the supplied 方映 MapCinema software-release thumbnail. Change ONLY the background; keep the exact existing foreground design, text wording, typography, dark green text color, relative sizes, foreground positions, logo, map wall and play triangle unchanged.
+Replace the current ivory background with a full-bleed MINECRAFT landscape viewed through milky FROSTED GLASS. Use a quiet recognizable vanilla Minecraft daytime panorama: blocky grassy hills, blocky trees, blue sky and distant terrain. Apply broad soft optical blur and a translucent warm ivory/milky glass wash evenly OVER THE ENTIRE BACKGROUND so it reads as a single restrained frosted-glass surface. Muted sage green, pale sky blue and warm cream colors. The Minecraft environment should remain softly recognizable but subdued and much less detailed than the crisp foreground map wall. Keep the background especially pale and low contrast behind the dark green text to preserve readability. The frosted material belongs to the entire background, NOT a separate rectangular card.
+Preserve the current one-image dual-aspect-ratio safe composition: ALL text, the logo and the complete map-wall foreground remain inside the central 62% of the full 16:9 canvas, with wide side breathing room. A centered 4:3 crop must retain every meaningful foreground element. The landscape may extend into the outer margins but must contain no new focal objects there.
+Text must remain exactly:
+"MapCinema"
+"方映"
+"把视频搬进"
+"我的世界"
+"基岩版地图动画工具"
+Keep all lettering and the map-wall foreground crisp; DO NOT blur the foreground.
+Constraints: no new labels, no new icons, no characters, no extra focal objects, no floating glass cards, no borders, no glows, no particle effects, no lens flares, no dramatic lighting, no reflections or glare streaks, no sparkles, no decorative effects, no watermarks. Minimal, quiet, clean. Only the requested softly blurred Minecraft background with milky frosted-glass color treatment is new.

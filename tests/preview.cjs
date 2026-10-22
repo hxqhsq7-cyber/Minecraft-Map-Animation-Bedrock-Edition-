@@ -7,7 +7,7 @@ const root = path.resolve(__dirname, '..');
 const profile = path.join(root, 'tests/runs/preview-' + Date.now());
 const env = { ...process.env, MAPCINEMA_DATA_DIR: profile }; delete env.ELECTRON_RUN_AS_NODE;
 const log = fs.openSync(path.join(root, 'logs/preview-exe.log'), 'w');
-const child = spawn(path.join(root, 'release/方映-电脑版-v19/方映.exe'),
+const child = spawn(path.join(root, 'release/方映-电脑版-v20.6/方映.exe'),
   ['--remote-debugging-port=0', '--remote-debugging-address=127.0.0.1'],
   { env, windowsHide: true, stdio: ['ignore', log, log] });
 const sleep = ms => new Promise(r => setTimeout(r, ms));
@@ -47,7 +47,7 @@ async function main() {
       packageRequired: document.getElementById('import-video').required, scrollY };
   })()`, returnByValue: true });
   assert.ok(!selected.exceptionDetails, JSON.stringify(selected.exceptionDetails));
-  assert.ok(selected.result.value.badge.includes('v19'));
+  assert.ok(selected.result.value.badge.includes('v20.6'));
   assert.ok(selected.result.value.scrollY > 100);
   assert.equal(selected.result.value.packageRequired, false);
   await sleep(500);

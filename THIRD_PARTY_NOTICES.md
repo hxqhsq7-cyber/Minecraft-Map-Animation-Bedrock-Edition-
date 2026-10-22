@@ -16,3 +16,5 @@
 AAC 备用编码器使用 FFmpeg 项目的代码，适用 LGPLv2.1 或后续版本。FFmpeg 源码位于 [官方仓库](https://github.com/FFmpeg/FFmpeg)，AAC 桥接源码、内置构建文件与编译参数位于固定版本上游包及 README，本项目未修改编码器。上游原始发行包可从 [Mediabunny 源码包](https://registry.npmjs.org/mediabunny/-/mediabunny-1.61.6.tgz) 与 [AAC 扩展源码包](https://registry.npmjs.org/@mediabunny/aac-encoder/-/aac-encoder-1.61.6.tgz) 获取。
 
 源码仓库不包含 Minecraft 游戏、官方专用服务端程序、用户世界或用户视频。测试夹具为小型回归素材；官方引擎验证范围见 [验证说明](docs/验证说明.md)。
+
+中国版普通世界数据库格式参考 [HTMonkeyG/XOR-MC-Archive-Decrypt](https://github.com/HTMonkeyG/XOR-MC-Archive-Decrypt) 的公开算法说明及用户提供的本地工具验证结果。v20 在 `app/china-world.cjs` 中独立实现固定魔数与默认周期 XOR，不捆绑该项目的 EXE，不处理附加包或资源中心二次加密。功能范围见 [中国版导入说明](docs/中国版电脑版导入.md)。

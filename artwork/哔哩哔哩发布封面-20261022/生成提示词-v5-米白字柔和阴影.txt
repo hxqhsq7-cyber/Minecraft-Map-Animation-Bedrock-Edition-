@@ -1,0 +1,13 @@
+生成方式：内置 image_gen 编辑 v4，保留旧图，另存 v5。
+修改：为米白中文加入柔和灰绿色短阴影，增强文字层次与对比；保留背景、布局和双比例裁切余量。
+最终提示词：
+Use case: precise-object-edit.
+Edit the supplied 方映 MapCinema cover. Add a tasteful, understated SOFT DROP SHADOW to the existing warm ivory Chinese lettering only. This is the sole requested modification.
+Chinese strings:
+"方映"
+"把视频搬进"
+"我的世界"
+"基岩版地图动画工具"
+Keep their exact ivory fill color, glyph shapes, font weight, positions, sizes, spacing and wording. Shadow: muted charcoal olive-gray, moderate-low opacity, gently blurred edges, small downward/rightward offset (roughly 3-5 pixels offset and 6-9 pixels softness at this canvas size). Visible enough to separate the pale text from the pale landscape, but restrained and clean. Apply proportionately subtler shadow on the small subtitle. A soft natural shadow beneath each glyph, not a hard border, not a stroke, not a long extrusion.
+Preserve everything else unchanged: dark green MapCinema wordmark and grid icon; Minecraft frosted-glass blurred landscape background with same brightness, color and blur; crisp 4-by-3 framed map picture wall and play triangle; central crop-safe arrangement for the SAME image in centered 16:9 and 4:3 views; generous outer margin.
+Do not change the background. Do not move or resize anything. No bevels, no 3D type, no glow, no thick outline, no extra effects, no new labels, no watermark. Keep the overall minimal design.
